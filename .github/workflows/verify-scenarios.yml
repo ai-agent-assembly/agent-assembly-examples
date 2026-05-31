@@ -1,0 +1,108 @@
+name: Verify Scenarios
+
+on:
+  pull_request:
+    paths:
+      - "scenarios/**"
+      - ".github/workflows/verify-scenarios.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "scenarios/**"
+
+jobs:
+  # ── Structural check: required files must be present ─────────────────────
+  structure-check:
+    name: Scenario structure check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required scenario files
+        run: |
+          set -e
+          for scenario in audit-trace budget-limits sidecar-runtime; do
+            echo "Checking scenarios/$scenario ..."
+            test -f "scenarios/$scenario/README.md" \
+              || { echo "MISSING: scenarios/$scenario/README.md"; exit 1; }
+          done
+          test -f "scenarios/audit-trace/expected-output.txt" \
+            || { echo "MISSING: scenarios/audit-trace/expected-output.txt"; exit 1; }
+          test -f "scenarios/budget-limits/expected-output.txt" \
+            || { echo "MISSING: scenarios/budget-limits/expected-output.txt"; exit 1; }
+          test -f "scenarios/budget-limits/policy.yaml" \
+            || { echo "MISSING: scenarios/budget-limits/policy.yaml"; exit 1; }
+          test -f "scenarios/sidecar-runtime/docker-compose.yml" \
+            || { echo "MISSING: scenarios/sidecar-runtime/docker-compose.yml"; exit 1; }
+          echo "All required scenario files are present."
+
+  # ── Python smoke paths ───────────────────────────────────────────────────
+  smoke-python-audit-trace:
+    name: "smoke: audit-trace (python)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run audit-trace Python example
+        run: python scenarios/audit-trace/python/agent.py
+
+  smoke-python-budget-limits:
+    name: "smoke: budget-limits (python)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run budget-limits Python example
+        run: python scenarios/budget-limits/python/agent.py
+
+  smoke-python-sidecar-runtime:
+    name: "smoke: sidecar-runtime (python, offline)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run sidecar-runtime Python example in offline mode
+        run: python scenarios/sidecar-runtime/examples/python-agent/agent.py
+        # ASSEMBLY_GATEWAY_URL intentionally unset — tests the offline fallback path.
+
+  # ── Node.js smoke paths ──────────────────────────────────────────────────
+  smoke-node-audit-trace:
+    name: "smoke: audit-trace (node)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run audit-trace Node.js example
+        run: node scenarios/audit-trace/node/agent.js
+
+  smoke-node-budget-limits:
+    name: "smoke: budget-limits (node)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run budget-limits Node.js example
+        run: node scenarios/budget-limits/node/agent.js
+
+  smoke-node-sidecar-runtime:
+    name: "smoke: sidecar-runtime (node, offline)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run sidecar-runtime Node.js example in offline mode
+        run: node scenarios/sidecar-runtime/examples/node-agent/agent.js
+        # ASSEMBLY_GATEWAY_URL intentionally unset — tests the offline fallback path.
