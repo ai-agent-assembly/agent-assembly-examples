@@ -27,6 +27,22 @@ Agent Assembly is a multi-layer AI agent governance platform that intercepts, in
 | Read core concepts first            | [`docs/concepts.md`](./docs/concepts.md)           |
 | Choose the right example            | [`docs/choosing-an-example.md`](./docs/choosing-an-example.md) |
 
+## Advanced scenarios: observability and runtime controls
+
+The `scenarios/` directory contains cross-language examples that demonstrate
+Agent Assembly's runtime governance features. These are the fastest path to
+understanding what Agent Assembly does at the product level — no framework
+setup required, no API keys needed.
+
+| Scenario | What it demonstrates | Quick start |
+|---|---|---|
+| [`audit-trace`](./scenarios/audit-trace/) | Governed tool calls producing `allow`, `deny`, and `approval_required` audit records | `python scenarios/audit-trace/python/agent.py` |
+| [`budget-limits`](./scenarios/budget-limits/) | Budget guardrails blocking tool calls when a session cost ceiling is hit | `python scenarios/budget-limits/python/agent.py` |
+| [`sidecar-runtime`](./scenarios/sidecar-runtime/) | Running agents against a local Agent Assembly gateway via Docker Compose | `bash scenarios/sidecar-runtime/scripts/start.sh` |
+
+All three scenarios include Python and Node.js examples. They run **offline by
+default** — no live gateway needed unless you opt into the Docker Compose path.
+
 ## Prerequisites
 
 Install the prerequisites for the ecosystem you want to run.
