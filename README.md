@@ -21,7 +21,9 @@ Agent Assembly is a multi-layer AI agent governance platform that intercepts, in
 | Use Go                              | [`go/`](./go/README.md)                            |
 | Explore policy enforcement          | [`scenarios/`](./scenarios/README.md)              |
 | Understand approval gates           | [`scenarios/`](./scenarios/README.md)              |
-| See audit trace and budget controls | [`scenarios/`](./scenarios/README.md)              |
+| See audit/trace output              | [`scenarios/audit-trace/`](./scenarios/audit-trace/README.md) |
+| Enforce budget guardrails           | [`scenarios/budget-limits/`](./scenarios/budget-limits/README.md) |
+| Run with a local sidecar runtime    | [`scenarios/sidecar-runtime/`](./scenarios/sidecar-runtime/README.md) |
 | Read core concepts first            | [`docs/concepts.md`](./docs/concepts.md)           |
 | Choose the right example            | [`docs/choosing-an-example.md`](./docs/choosing-an-example.md) |
 
