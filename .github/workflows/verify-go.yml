@@ -1,0 +1,43 @@
+name: Verify Go examples
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "go/**"
+      - ".github/workflows/verify-go.yml"
+  pull_request:
+    branches: [master]
+    paths:
+      - "go/**"
+      - ".github/workflows/verify-go.yml"
+
+jobs:
+  test:
+    name: Test Go examples
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        example:
+          - basic-agent
+          - tool-policy
+          - cli-runtime-integration
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache-dependency-path: go/${{ matrix.example }}/go.sum
+
+      - name: Test ${{ matrix.example }}
+        env:
+          EXAMPLE: ${{ matrix.example }}
+        run: |
+          if [ -d "go/${EXAMPLE}" ]; then
+            cd "go/${EXAMPLE}" && go test ./...
+          else
+            echo "go/${EXAMPLE} not yet present — skipping"
+          fi
