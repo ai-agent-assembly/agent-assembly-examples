@@ -1,0 +1,29 @@
+version: "3.9"
+
+# Lightweight local Agent Assembly runtime for development and testing.
+#
+# Start:  bash scripts/start.sh
+# Stop:   bash scripts/stop.sh
+#
+# To use the real Agent Assembly gateway instead of this mock, replace the
+# `build` block with:
+#   image: ghcr.io/ai-agent-assembly/agent-assembly-gateway:latest
+# and configure credentials via environment variables.
+
+services:
+  assembly-gateway:
+    build:
+      context: mock-gateway
+    ports:
+      - "8080:8080"   # HTTP health check + REST API
+      # Port 50051 (gRPC) is used by the production gateway.
+      # The mock uses HTTP only for simplicity.
+    environment:
+      - LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health 2>/dev/null | grep -q ok || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
