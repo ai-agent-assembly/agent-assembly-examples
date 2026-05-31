@@ -1,0 +1,24 @@
+# Agent Assembly budget policy
+#
+# This policy defines cost limits for an AI agent session.
+# Upload to the gateway with:
+#   aasm policy upload policy.yaml --agent <agent-id>
+#
+# In the offline example (agent.py / agent.js), the max_cost value is read
+# from the BUDGET_LIMIT constant at the top of each script.
+
+budget:
+  # Maximum cumulative cost allowed per session (in USD equivalent units).
+  max_cost: 0.50
+  # Tracking window: session | daily | monthly
+  window: session
+  # Action when the limit is reached: deny | throttle
+  on_exceed: deny
+
+# Per-call cost for each tool.
+# Tools not listed here default to 0.01.
+tool_costs:
+  web_search: 0.05
+  query_database: 0.10
+  call_external_api: 0.20
+  generate_report: 0.25
