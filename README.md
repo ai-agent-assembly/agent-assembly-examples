@@ -21,9 +21,27 @@ Agent Assembly is a multi-layer AI agent governance platform that intercepts, in
 | Use Go                              | [`go/`](./go/README.md)                            |
 | Explore policy enforcement          | [`scenarios/`](./scenarios/README.md)              |
 | Understand approval gates           | [`scenarios/`](./scenarios/README.md)              |
-| See audit trace and budget controls | [`scenarios/`](./scenarios/README.md)              |
+| See audit/trace output              | [`scenarios/audit-trace/`](./scenarios/audit-trace/README.md) |
+| Enforce budget guardrails           | [`scenarios/budget-limits/`](./scenarios/budget-limits/README.md) |
+| Run with a local sidecar runtime    | [`scenarios/sidecar-runtime/`](./scenarios/sidecar-runtime/README.md) |
 | Read core concepts first            | [`docs/concepts.md`](./docs/concepts.md)           |
 | Choose the right example            | [`docs/choosing-an-example.md`](./docs/choosing-an-example.md) |
+
+## Advanced scenarios: observability and runtime controls
+
+The `scenarios/` directory contains cross-language examples that demonstrate
+Agent Assembly's runtime governance features. These are the fastest path to
+understanding what Agent Assembly does at the product level — no framework
+setup required, no API keys needed.
+
+| Scenario | What it demonstrates | Quick start |
+|---|---|---|
+| [`audit-trace`](./scenarios/audit-trace/) | Governed tool calls producing `allow`, `deny`, and `approval_required` audit records | `python scenarios/audit-trace/python/agent.py` |
+| [`budget-limits`](./scenarios/budget-limits/) | Budget guardrails blocking tool calls when a session cost ceiling is hit | `python scenarios/budget-limits/python/agent.py` |
+| [`sidecar-runtime`](./scenarios/sidecar-runtime/) | Running agents against a local Agent Assembly gateway via Docker Compose | `bash scenarios/sidecar-runtime/scripts/start.sh` |
+
+All three scenarios include Python and Node.js examples. They run **offline by
+default** — no live gateway needed unless you opt into the Docker Compose path.
 
 ## Prerequisites
 
@@ -98,6 +116,9 @@ agent-assembly-examples/
     README.md                   ← Go examples index
   scenarios/
     README.md                   ← Cross-language scenario examples index
+    audit-trace/                ← Governed tool calls + audit record inspection
+    budget-limits/              ← Budget guardrails and cost ceiling enforcement
+    sidecar-runtime/            ← Local Agent Assembly runtime via Docker Compose
   .github/
     workflows/
       README.md                 ← CI workflow documentation
