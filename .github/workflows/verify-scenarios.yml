@@ -43,7 +43,6 @@ jobs:
   structure-check:
     name: Scenario structure check
     needs: preflight
-    # Only run if at least one scenario directory landed on this branch.
     if: |
       needs.preflight.outputs.audit_trace == 'true'   ||
       needs.preflight.outputs.budget_limits == 'true' ||
@@ -157,3 +156,121 @@ jobs:
       - name: Run sidecar-runtime Node.js example in offline mode
         run: node scenarios/sidecar-runtime/examples/node-agent/agent.js
         # ASSEMBLY_GATEWAY_URL intentionally unset — tests the offline fallback path.
+
+  # ── policy-enforcement scenario ──────────────────────────────────────────
+  policy-enforcement-python:
+    name: policy-enforcement / python
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Run smoke tests
+        run: |
+          if [ -d "scenarios/policy-enforcement/python" ]; then
+            cd scenarios/policy-enforcement/python
+            uv sync --extra dev
+            uv run pytest tests/ -v
+          else
+            echo "scenarios/policy-enforcement/python not yet present — skipping"
+          fi
+
+  policy-enforcement-node:
+    name: policy-enforcement / node
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+          cache-dependency-path: scenarios/policy-enforcement/node/pnpm-lock.yaml
+
+      - name: Run tests
+        run: |
+          if [ -d "scenarios/policy-enforcement/node" ]; then
+            cd scenarios/policy-enforcement/node
+            pnpm install
+            pnpm test
+          else
+            echo "scenarios/policy-enforcement/node not yet present — skipping"
+          fi
+
+  policy-enforcement-go:
+    name: policy-enforcement / go
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+
+      - name: Run tests
+        run: |
+          if [ -d "scenarios/policy-enforcement/go" ]; then
+            cd scenarios/policy-enforcement/go
+            go test ./...
+          else
+            echo "scenarios/policy-enforcement/go not yet present — skipping"
+          fi
+
+  # ── approval-gates scenario ───────────────────────────────────────────────
+  approval-gates-python:
+    name: approval-gates / python
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Run smoke tests
+        run: |
+          if [ -d "scenarios/approval-gates/python" ]; then
+            cd scenarios/approval-gates/python
+            uv sync --extra dev
+            uv run pytest tests/ -v
+          else
+            echo "scenarios/approval-gates/python not yet present — skipping"
+          fi
+
+  approval-gates-node:
+    name: approval-gates / node
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+          cache-dependency-path: scenarios/approval-gates/node/pnpm-lock.yaml
+
+      - name: Run tests
+        run: |
+          if [ -d "scenarios/approval-gates/node" ]; then
+            cd scenarios/approval-gates/node
+            pnpm install
+            pnpm test
+          else
+            echo "scenarios/approval-gates/node not yet present — skipping"
+          fi

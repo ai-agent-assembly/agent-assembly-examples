@@ -19,8 +19,8 @@ Agent Assembly is a multi-layer AI agent governance platform that intercepts, in
 | Use Python + LangChain              | [`python/`](./python/README.md)                    |
 | Use Node.js / TypeScript + LangChain| [`node/`](./node/README.md)                        |
 | Use Go                              | [`go/`](./go/README.md)                            |
-| Explore policy enforcement          | [`scenarios/`](./scenarios/README.md)              |
-| Understand approval gates           | [`scenarios/`](./scenarios/README.md)              |
+| Explore policy enforcement          | [`scenarios/policy-enforcement/`](./scenarios/policy-enforcement/README.md) |
+| Understand approval gates           | [`scenarios/approval-gates/`](./scenarios/approval-gates/README.md)         |
 | See audit/trace output              | [`scenarios/audit-trace/`](./scenarios/audit-trace/README.md) |
 | Enforce budget guardrails           | [`scenarios/budget-limits/`](./scenarios/budget-limits/README.md) |
 | Run with a local sidecar runtime    | [`scenarios/sidecar-runtime/`](./scenarios/sidecar-runtime/README.md) |
@@ -116,6 +116,8 @@ agent-assembly-examples/
     README.md                   ← Go examples index
   scenarios/
     README.md                   ← Cross-language scenario examples index
+    policy-enforcement/         ← Allow/deny policy enforcement scenario
+    approval-gates/             ← Human-in-the-loop approval gates scenario
     audit-trace/                ← Governed tool calls + audit record inspection
     budget-limits/              ← Budget guardrails and cost ceiling enforcement
     sidecar-runtime/            ← Local Agent Assembly runtime via Docker Compose
