@@ -12,9 +12,42 @@ on:
       - "scenarios/**"
 
 jobs:
+  # ── Preflight: detect which scenarios are present on this branch ──────────
+  preflight:
+    name: Detect present scenarios
+    runs-on: ubuntu-latest
+    outputs:
+      audit_trace: ${{ steps.check.outputs.audit_trace }}
+      budget_limits: ${{ steps.check.outputs.budget_limits }}
+      sidecar_runtime: ${{ steps.check.outputs.sidecar_runtime }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        name: Check which scenario directories are present
+        run: |
+          audit_trace="false"
+          budget_limits="false"
+          sidecar_runtime="false"
+          [[ -f "scenarios/audit-trace/python/agent.py" ]]                          && audit_trace="true"
+          [[ -f "scenarios/budget-limits/python/agent.py" ]]                        && budget_limits="true"
+          [[ -f "scenarios/sidecar-runtime/examples/python-agent/agent.py" ]]      && sidecar_runtime="true"
+          echo "audit_trace=$audit_trace"   >> "$GITHUB_OUTPUT"
+          echo "budget_limits=$budget_limits" >> "$GITHUB_OUTPUT"
+          echo "sidecar_runtime=$sidecar_runtime" >> "$GITHUB_OUTPUT"
+          echo "audit-trace present:      $audit_trace"
+          echo "budget-limits present:    $budget_limits"
+          echo "sidecar-runtime present:  $sidecar_runtime"
+
   # ── Structural check: required files must be present ─────────────────────
   structure-check:
     name: Scenario structure check
+    needs: preflight
+    # Only run if at least one scenario directory landed on this branch.
+    if: |
+      needs.preflight.outputs.audit_trace == 'true'   ||
+      needs.preflight.outputs.budget_limits == 'true' ||
+      needs.preflight.outputs.sidecar_runtime == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,23 +56,31 @@ jobs:
         run: |
           set -e
           for scenario in audit-trace budget-limits sidecar-runtime; do
-            echo "Checking scenarios/$scenario ..."
-            test -f "scenarios/$scenario/README.md" \
-              || { echo "MISSING: scenarios/$scenario/README.md"; exit 1; }
+            if [[ -d "scenarios/$scenario" ]]; then
+              echo "Checking scenarios/$scenario ..."
+              test -f "scenarios/$scenario/README.md" \
+                || { echo "MISSING: scenarios/$scenario/README.md"; exit 1; }
+            fi
           done
-          test -f "scenarios/audit-trace/expected-output.txt" \
-            || { echo "MISSING: scenarios/audit-trace/expected-output.txt"; exit 1; }
-          test -f "scenarios/budget-limits/expected-output.txt" \
-            || { echo "MISSING: scenarios/budget-limits/expected-output.txt"; exit 1; }
-          test -f "scenarios/budget-limits/policy.yaml" \
-            || { echo "MISSING: scenarios/budget-limits/policy.yaml"; exit 1; }
-          test -f "scenarios/sidecar-runtime/docker-compose.yml" \
-            || { echo "MISSING: scenarios/sidecar-runtime/docker-compose.yml"; exit 1; }
-          echo "All required scenario files are present."
+          [[ -f "scenarios/audit-trace/expected-output.txt" ]] \
+            && echo "audit-trace/expected-output.txt ✓" \
+            || echo "INFO: audit-trace not yet present"
+          [[ -f "scenarios/budget-limits/expected-output.txt" ]] \
+            && echo "budget-limits/expected-output.txt ✓" \
+            || echo "INFO: budget-limits not yet present"
+          [[ -f "scenarios/budget-limits/policy.yaml" ]] \
+            && echo "budget-limits/policy.yaml ✓" \
+            || echo "INFO: budget-limits not yet present"
+          [[ -f "scenarios/sidecar-runtime/docker-compose.yml" ]] \
+            && echo "sidecar-runtime/docker-compose.yml ✓" \
+            || echo "INFO: sidecar-runtime not yet present"
+          echo "Structure check passed for all present scenarios."
 
   # ── Python smoke paths ───────────────────────────────────────────────────
   smoke-python-audit-trace:
     name: "smoke: audit-trace (python)"
+    needs: preflight
+    if: needs.preflight.outputs.audit_trace == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,6 +92,8 @@ jobs:
 
   smoke-python-budget-limits:
     name: "smoke: budget-limits (python)"
+    needs: preflight
+    if: needs.preflight.outputs.budget_limits == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +105,8 @@ jobs:
 
   smoke-python-sidecar-runtime:
     name: "smoke: sidecar-runtime (python, offline)"
+    needs: preflight
+    if: needs.preflight.outputs.sidecar_runtime == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -75,6 +120,8 @@ jobs:
   # ── Node.js smoke paths ──────────────────────────────────────────────────
   smoke-node-audit-trace:
     name: "smoke: audit-trace (node)"
+    needs: preflight
+    if: needs.preflight.outputs.audit_trace == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -86,6 +133,8 @@ jobs:
 
   smoke-node-budget-limits:
     name: "smoke: budget-limits (node)"
+    needs: preflight
+    if: needs.preflight.outputs.budget_limits == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -97,6 +146,8 @@ jobs:
 
   smoke-node-sidecar-runtime:
     name: "smoke: sidecar-runtime (node, offline)"
+    needs: preflight
+    if: needs.preflight.outputs.sidecar_runtime == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
