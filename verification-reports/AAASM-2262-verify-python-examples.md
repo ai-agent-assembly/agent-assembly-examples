@@ -3,7 +3,7 @@
 **Ticket**: AAASM-2262  
 **Story**: AAASM-2193 — Add Python framework examples to agent-assembly-examples  
 **Verified on**: 2026-05-30  
-**Repo**: https://github.com/AI-agent-assembly/agent-assembly-examples
+**Repo**: https://github.com/ai-agent-assembly/agent-assembly-examples
 
 ---
 

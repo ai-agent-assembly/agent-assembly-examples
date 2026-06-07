@@ -77,6 +77,6 @@ cp .env.example .env
 
 ## Links
 
-- [Agent Assembly Node.js SDK](https://github.com/AI-agent-assembly/node-sdk)
+- [Agent Assembly Node.js SDK](https://github.com/ai-agent-assembly/node-sdk)
 - [Node.js examples overview](../README.md)
 - [Root examples README](../../README.md)

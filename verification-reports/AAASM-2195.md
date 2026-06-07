@@ -3,7 +3,7 @@
 **Story:** Add Go SDK and CLI runtime examples to agent-assembly-examples  
 **Verified by:** AAASM-2277  
 **Date:** 2026-05-30  
-**SDK version:** github.com/AI-agent-assembly/go-sdk v0.0.1-alpha.2
+**SDK version:** github.com/ai-agent-assembly/go-sdk v0.0.1-alpha.2
 
 ---
 
