@@ -2,7 +2,7 @@
 
 The simplest Agent Assembly integration — no AI framework required.
 
-Demonstrates how to add [Agent Assembly](https://github.com/AI-agent-assembly/agent-assembly-examples) governance to plain Python functions using the minimal `governed()` wrapper helper.
+Demonstrates how to add [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly-examples) governance to plain Python functions using the minimal `governed()` wrapper helper.
 
 ## What this example demonstrates
 
@@ -99,6 +99,6 @@ with init_assembly(gateway_url="http://localhost:8080", agent_id="my-agent") as 
 
 ## Links
 
-- [Agent Assembly Python SDK](https://github.com/AI-agent-assembly/python-sdk)
+- [Agent Assembly Python SDK](https://github.com/ai-agent-assembly/python-sdk)
 - [Agent Assembly Examples](../../README.md)
 - [Python Examples](../README.md)

@@ -1,6 +1,6 @@
 # llamaindex-tool-policy
 
-Demonstrates how to add [Agent Assembly](https://github.com/AI-agent-assembly/agent-assembly-examples) governance to [LlamaIndex](https://docs.llamaindex.ai/) tool calls when no native adapter is available.
+Demonstrates how to add [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly-examples) governance to [LlamaIndex](https://docs.llamaindex.ai/) tool calls when no native adapter is available.
 
 Because LlamaIndex does not yet have a native Agent Assembly adapter, this example shows the **manual wrapper pattern** — wrapping each `FunctionTool` with `GovernedToolRunner` so governance is enforced before every tool invocation. This pattern works for any Python callable.
 
@@ -95,7 +95,7 @@ with init_assembly(gateway_url="http://localhost:8080", agent_id="my-agent") as 
 
 ## Links
 
-- [Agent Assembly Python SDK](https://github.com/AI-agent-assembly/python-sdk)
+- [Agent Assembly Python SDK](https://github.com/ai-agent-assembly/python-sdk)
 - [LlamaIndex docs](https://docs.llamaindex.ai/)
 - [Agent Assembly Examples](../../README.md)
 - [Python Examples](../README.md)

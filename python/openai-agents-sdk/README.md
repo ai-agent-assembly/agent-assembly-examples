@@ -1,6 +1,6 @@
 # openai-agents-sdk
 
-Demonstrates how to integrate [Agent Assembly](https://github.com/AI-agent-assembly/agent-assembly-examples) with the [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) to enforce governance policy — including approval gates — on tool calls before execution.
+Demonstrates how to integrate [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly-examples) with the [OpenAI Agents SDK](https://openai.github.io/openai-agents-python/) to enforce governance policy — including approval gates — on tool calls before execution.
 
 ## What this example demonstrates
 
@@ -94,7 +94,7 @@ When an `OPENAI_API_KEY` is set, you can extend `main.py` to create a real `open
 
 ## Links
 
-- [Agent Assembly Python SDK](https://github.com/AI-agent-assembly/python-sdk)
+- [Agent Assembly Python SDK](https://github.com/ai-agent-assembly/python-sdk)
 - [OpenAI Agents SDK docs](https://openai.github.io/openai-agents-python/)
 - [Agent Assembly Examples](../../README.md)
 - [Python Examples](../README.md)

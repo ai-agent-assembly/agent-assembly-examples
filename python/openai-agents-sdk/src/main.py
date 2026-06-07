@@ -103,7 +103,7 @@ def main() -> None:
     print("Real OpenAI Agents SDK integration:")
     print("  When openai.agents.FunctionTool is used, Agent Assembly's")
     print("  OpenAIAgentsPatch intercepts tool calls at the framework level.")
-    print("  See: https://github.com/AI-agent-assembly/python-sdk")
+    print("  See: https://github.com/ai-agent-assembly/python-sdk")
 
 
 if __name__ == "__main__":

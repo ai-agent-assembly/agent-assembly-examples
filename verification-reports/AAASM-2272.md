@@ -3,7 +3,7 @@
 **Story**: AAASM-2194 — Add Node.js and TypeScript framework examples to agent-assembly-examples  
 **Verified by**: AAASM-2272 (Verify AAASM-2194 Node.js examples acceptance criteria)  
 **Date**: 2026-05-30  
-**Repo**: https://github.com/AI-agent-assembly/agent-assembly-examples
+**Repo**: https://github.com/ai-agent-assembly/agent-assembly-examples
 
 ## Summary
 

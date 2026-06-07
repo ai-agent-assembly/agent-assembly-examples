@@ -9,10 +9,10 @@
 
 ## Acceptance criteria verification
 
-### AC 1 — Public GitHub repo exists under `AI-agent-assembly`
+### AC 1 — Public GitHub repo exists under `ai-agent-assembly`
 
 - **Status**: PASS
-- **Evidence**: `gh repo view AI-agent-assembly/agent-assembly-examples` returns `visibility: PUBLIC`
+- **Evidence**: `gh repo view ai-agent-assembly/agent-assembly-examples` returns `visibility: PUBLIC`
 
 ### AC 2 — Repo description and topics are set
 

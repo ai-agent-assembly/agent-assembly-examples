@@ -1,6 +1,6 @@
 # Agent Assembly Examples
 
-Runnable examples showing how to integrate [Agent Assembly](https://github.com/AI-agent-assembly/agent-assembly) with real AI agent frameworks, enforce policies, gate approvals, capture audit traces, and control runtime budgets.
+Runnable examples showing how to integrate [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly) with real AI agent frameworks, enforce policies, gate approvals, capture audit traces, and control runtime budgets.
 
 ## What is Agent Assembly?
 

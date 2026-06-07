@@ -63,4 +63,4 @@ The gateway tracks cumulative resource usage per team or per agent: API call cou
 
 - [Choosing an example](./choosing-an-example.md) — find the right sub-project for your use case.
 - [Root README](../README.md) — navigation table and contribution guide.
-- [Agent Assembly source repository](https://github.com/AI-agent-assembly/agent-assembly) — the monorepo with the full implementation.
+- [Agent Assembly source repository](https://github.com/ai-agent-assembly/agent-assembly) — the monorepo with the full implementation.
