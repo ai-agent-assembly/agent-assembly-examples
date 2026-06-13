@@ -10,6 +10,8 @@ This directory contains runnable Python examples showing how to integrate Agent 
 | `openai-agents-sdk/`               | OpenAI Agents SDK| Govern tool calls made by an OpenAI Agents SDK agent      |
 | `llamaindex-tool-policy/`          | LlamaIndex       | Enforce tool-level allow/deny policies with LlamaIndex    |
 | `custom-tool-policy/`              | —                | Write a custom Python tool wrapper with SDK               |
+| `langchain-research-agent/`        | LangChain        | ReAct research agent with budget, egress allowlist, and credential-leak blocking |
+| `crewai-research-crew/`            | CrewAI           | Multi-agent crew with delegation tracking, file-write approval, and shared budget |
 
 All examples use the `agent-assembly` Python package (available on PyPI).
 
