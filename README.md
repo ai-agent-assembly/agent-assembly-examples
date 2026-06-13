@@ -16,10 +16,10 @@ workflows — then go deeper in the docs.
 | Resource | Link |
 |---|---|
 | Documentation hub | <https://ai-agent-assembly.github.io/agent-assembly-docs/> |
-| Core runtime & CLI | [agent-assembly](https://github.com/AI-agent-assembly/agent-assembly) |
-| Python SDK | [python-sdk](https://github.com/AI-agent-assembly/python-sdk) |
-| Node.js / TypeScript SDK | [node-sdk](https://github.com/AI-agent-assembly/node-sdk) |
-| Go SDK | [go-sdk](https://github.com/AI-agent-assembly/go-sdk) |
+| Core runtime & CLI | [agent-assembly](https://github.com/ai-agent-assembly/agent-assembly) |
+| Python SDK | [python-sdk](https://github.com/ai-agent-assembly/python-sdk) |
+| Node.js / TypeScript SDK | [node-sdk](https://github.com/ai-agent-assembly/node-sdk) |
+| Go SDK | [go-sdk](https://github.com/ai-agent-assembly/go-sdk) |
 
 ## Who is this repo for?
 
