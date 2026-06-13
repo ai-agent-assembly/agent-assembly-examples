@@ -89,3 +89,41 @@ jobs:
 
       - name: Run smoke tests
         run: uv run pytest tests/ -v
+
+  langchain-research-agent:
+    name: langchain-research-agent
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python/langchain-research-agent
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Run smoke tests
+        run: uv run pytest tests/ -v
+
+  crewai-research-crew:
+    name: crewai-research-crew
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python/crewai-research-crew
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Run smoke tests
+        run: uv run pytest tests/ -v
