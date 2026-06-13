@@ -5,10 +5,10 @@ A LangChain.js-style agent example showing how to integrate the Agent Assembly N
 ## What this example demonstrates
 
 - Calling `initAssembly()` to connect to an Agent Assembly gateway (or run in offline/noop mode)
-- Wrapping tool calls with `withAssembly()` so every execution passes through governance
+- Governing every tool call through a local policy before execution
 - One **allowed** tool call (`get_weather`) — executes and logs output
 - One **denied** tool call (`delete_file`) — blocked at the policy layer
-- Audit events emitted to the gateway on each tool invocation
+- Agent registered with `initAssembly()` (gateway, or offline/noop mode)
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ Running allowed tool: get_weather
 Running denied tool: delete_file
 [POLICY DENY] delete_file: Destructive filesystem operations require human approval.
 
-Done. Audit events emitted to gateway (or noop in offline mode).
+Done. Tool calls governed by the local policy.
 ```
 
 ## Test
