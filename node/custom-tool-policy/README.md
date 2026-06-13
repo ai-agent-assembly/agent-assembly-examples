@@ -4,11 +4,11 @@ A minimal TypeScript example showing how to use Agent Assembly governance direct
 
 ## What this example demonstrates
 
-- Using `initAssembly()` and `withAssembly()` from `@agent-assembly/sdk` without any external agent framework
-- Defining raw TypeScript tool functions and wrapping them for governance
+- Using `initAssembly()` from `@agent-assembly/sdk` without any external agent framework
+- Defining raw TypeScript tool functions and governing them with a local policy
 - One **allowed** tool call (`read_file`) — executes and returns mock output
 - One **denied** tool call (`write_file`) — blocked at the policy layer
-- Audit events emitted to the gateway (or noop in offline mode)
+- Agent registered with `initAssembly()` (gateway, or offline/noop mode)
 
 ## Prerequisites
 
@@ -40,7 +40,7 @@ Calling allowed tool: read_file
 Calling denied tool: write_file
 [POLICY DENY] write_file: Write operations to the filesystem require explicit approval.
 
-All tool calls governed by policy. Audit emitted to gateway (or noop).
+All tool calls governed by the local policy.
 ```
 
 ## Test
