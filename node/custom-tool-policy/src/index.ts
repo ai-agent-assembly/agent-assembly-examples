@@ -1,4 +1,4 @@
-import { initAssembly, withAssembly } from "@agent-assembly/sdk";
+import { initAssembly } from "@agent-assembly/sdk";
 import { evaluate } from "./policy.js";
 import { readFile, writeFile } from "./tools.js";
 
@@ -34,15 +34,13 @@ async function main(): Promise<void> {
     mode: "auto",
   });
 
-  const govern = withAssembly(executeTool, { agentId: "custom-tool-policy-agent" });
-
   console.log("Calling allowed tool: read_file");
-  await govern("read_file", { path: "/data/report.txt" });
+  await executeTool("read_file", { path: "/data/report.txt" });
 
   console.log("\nCalling denied tool: write_file");
-  await govern("write_file", { path: "/etc/config", content: "override settings" });
+  await executeTool("write_file", { path: "/etc/config", content: "override settings" });
 
-  console.log("\nAll tool calls governed by policy. Audit emitted to gateway (or noop).");
+  console.log("\nAll tool calls governed by the local policy.");
 }
 
 main().catch((err) => {

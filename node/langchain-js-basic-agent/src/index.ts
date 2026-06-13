@@ -1,4 +1,4 @@
-import { initAssembly, withAssembly } from "@agent-assembly/sdk";
+import { initAssembly } from "@agent-assembly/sdk";
 import { evaluate } from "./policy.js";
 import { TOOLS, type ToolName } from "./tools.js";
 
@@ -20,18 +20,13 @@ async function main(): Promise<void> {
     mode: "auto",
   });
 
-  const wrappedRun = withAssembly(
-    async (toolName: ToolName, args: Record<string, unknown>) => runTool(toolName, args),
-    { agentId: "langchain-js-example-agent" },
-  );
-
   console.log("Running allowed tool: get_weather");
-  await wrappedRun("get_weather", { location: "Taipei" });
+  await runTool("get_weather", { location: "Taipei" });
 
   console.log("\nRunning denied tool: delete_file");
-  await wrappedRun("delete_file", { path: "/etc/hosts" });
+  await runTool("delete_file", { path: "/etc/hosts" });
 
-  console.log("\nDone. Audit events emitted to gateway (or noop in offline mode).");
+  console.log("\nDone. Tool calls governed by the local policy.");
 }
 
 main().catch((err) => {
