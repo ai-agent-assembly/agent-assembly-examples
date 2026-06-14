@@ -3,7 +3,7 @@ module example.com/langchaingo
 go 1.26.0
 
 require (
-	github.com/ai-agent-assembly/go-sdk v0.0.1-alpha.4
+	github.com/ai-agent-assembly/go-sdk v0.0.1-alpha.5
 	github.com/tmc/langchaingo v0.1.14
 )
 
