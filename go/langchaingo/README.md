@@ -1,0 +1,98 @@
+# langchaingo
+
+Go example showing how to govern a [LangChainGo](https://github.com/tmc/langchaingo)
+agent's tool calls with Agent Assembly.
+
+## What this example demonstrates
+
+- Defining tools that implement LangChainGo's `tools.Tool` interface
+- Wrapping those tools with `assembly.WrapTools` so every tool call is checked
+  against a governance policy before it runs
+- That a governed tool **is still a valid LangChainGo tool** — the wrapping is
+  drop-in, because `tools.Tool` and `assembly.Tool` share the same shape
+- An **allowed** tool call (`search`) completing normally
+- A **denied** tool call (`send-email`) returning `assembly.PolicyViolationError`
+- Driving the agent with a **fake LLM**, so the example runs with no API key
+
+## Prerequisites
+
+| Requirement | Version |
+|---|---|
+| Go | >= 1.26 |
+| Agent Assembly Go SDK | v0.0.1-alpha.4 |
+| LangChainGo | v0.1.14 |
+
+No live gateway and no LLM API key are required. Policy rules are applied by an
+in-process mock client, and a `fake.NewFakeLLM` stands in for a real model.
+
+## Setup
+
+```bash
+git clone https://github.com/ai-agent-assembly/agent-assembly-examples.git
+cd agent-assembly-examples/go/langchaingo
+go mod download
+```
+
+## Run
+
+```bash
+go run .
+```
+
+## Expected output
+
+```text
+[assembly] governing LangChainGo tools via an offline policy client
+[policy] loaded: search=ALLOW, send-email=DENY
+
+[llm] plan: I should search for the topic, then email the result.
+
+[agent] calling tool: search  input="agent governance"
+[policy] ALLOWED  tool=search
+[agent] result: (summary for agent governance)
+
+[agent] calling tool: send-email  input="user@example.com"
+[policy] DENIED   tool=send-email  reason="outbound email is blocked by policy"
+[agent] blocked: assembly: policy violation: tool=send-email reason=outbound email is blocked by policy
+```
+
+## Test
+
+```bash
+go test ./...
+```
+
+All tests run offline — no gateway and no LLM API key required.
+
+## How it works
+
+1. `tools.go` defines `searchTool` (safe) and `sendEmailTool` (side-effecting),
+   both implementing LangChainGo's `tools.Tool` interface.
+2. `policy.go` defines `policyClient` — an `assembly.GovernanceClient` that checks
+   the tool name and returns `Denied: true` for the blocked tool.
+3. `main.go` uses a fake LLM to produce the agent's plan, then wraps both tools
+   with `assembly.WrapTools` using `policyClient`. Because the wrapped tools still
+   satisfy `tools.Tool`, they can be handed straight to a LangChainGo agent.
+4. It calls each tool and shows the governance outcome.
+
+To make this production-ready, swap `fake.NewFakeLLM` for a real model (e.g.
+`openai.New()`) and swap `policyClient` for a client backed by a real gateway —
+the same `assembly.WrapTools` logic keeps controlling your agent's tool access.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `go: module not found` | Run `go mod download` — requires internet access on first run. |
+| Both tools allowed | Verify you are running `go run .` inside `go/langchaingo/`, not the repo root. |
+
+## Go SDK docs
+
+- [`assembly.WrapTools`](https://pkg.go.dev/github.com/ai-agent-assembly/go-sdk/assembly#WrapTools)
+- [`assembly.PolicyViolationError`](https://pkg.go.dev/github.com/ai-agent-assembly/go-sdk/assembly#PolicyViolationError)
+- [`assembly.GovernanceClient`](https://pkg.go.dev/github.com/ai-agent-assembly/go-sdk/assembly#GovernanceClient)
+- [LangChainGo `tools.Tool`](https://pkg.go.dev/github.com/tmc/langchaingo/tools#Tool)
+
+## Back to Go examples
+
+[← Go Examples](../README.md)
