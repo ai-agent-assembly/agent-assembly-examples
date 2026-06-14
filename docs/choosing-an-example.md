@@ -24,6 +24,14 @@ Which language are you using?
 | Use the OpenAI Agents SDK                      | `python/openai-agents-sdk/`                   |
 | Apply tool-level policies with LlamaIndex      | `python/llamaindex-tool-policy/`              |
 | Write a custom tool wrapper with SDK           | `python/custom-tool-policy/`                  |
+| Govern nodes of a LangGraph `StateGraph`       | `python/langgraph/`                           |
+| Govern Pydantic AI tool calls (offline `TestModel`) | `python/pydantic-ai/`                    |
+| Govern a Google ADK agent (scripted, no live LLM)¹ | `python/google-adk/`                      |
+
+¹ The `google-adk` example replays a **scripted tool trajectory** with no live
+LLM — Google ADK normally drives its loop against a cloud model (Gemini /
+Vertex AI), so the example invokes real `BaseTool.run_async` directly to keep CI
+offline and credential-free. The allow / deny / pending governance path is real.
 
 All Python examples use the `agent-assembly` Python SDK (PyPI package).
 
@@ -38,6 +46,14 @@ All Python examples use the `agent-assembly` Python SDK (PyPI package).
 | Wire Agent Assembly into a LangChain.js agent  | `node/langchain-js-basic-agent/`              |
 | Apply tool policies with the OpenAI Node SDK   | `node/openai-node-tool-policy/`               |
 | Write a custom TypeScript tool wrapper         | `node/custom-tool-policy/`                    |
+| Govern Vercel AI SDK `tool()` calls            | `node/vercel-ai/`                             |
+| Govern tool calls in a LangGraph.js state machine² | `node/langgraph-js/`                      |
+| Govern Mastra `createTool` calls               | `node/mastra/`                                |
+
+² The `langgraph-js` example uses a **hand-rolled `StateGraph`**, not the real
+`@langchain/langgraph` (which transitively pulls `@langchain/core`). It replays
+the LangGraph.js graph shape so the example stays offline and dependency-free in
+CI; the `withAssembly` governance path is identical to a real graph.
 
 All Node.js examples use the `@agent-assembly/sdk` npm package.
 
@@ -51,6 +67,7 @@ All Node.js examples use the `@agent-assembly/sdk` npm package.
 |------------------------------------------------|------------------------------------------------|
 | Build a basic governed agent in Go             | `go/basic-agent/`                             |
 | Enforce tool-level policies in Go              | `go/tool-policy/`                             |
+| Govern a LangChainGo agent's tool calls        | `go/langchaingo/`                             |
 | Integrate the Agent Assembly CLI runtime       | `go/cli-runtime-integration/`                 |
 
 All Go examples use the `github.com/agent-assembly/go-sdk` module.
