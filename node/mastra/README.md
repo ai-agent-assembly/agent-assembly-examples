@@ -1,0 +1,87 @@
+# mastra
+
+A TypeScript example showing how to govern [Mastra](https://mastra.ai) tools with Agent Assembly.
+
+## What this example demonstrates
+
+- Defining tools with Mastra's `createTool` (the real `@mastra/core` package)
+- Wrapping those tools with `withAssembly()` from `@agent-assembly/sdk` + a local-policy `GatewayClient`
+- One **allowed** tool call (`get_stock_price`) — executes and returns mock output
+- One **denied** tool call (`place_trade`) — blocked at the policy layer with `PolicyViolationError`
+- Runs fully offline — no provider key, no live LLM, and no `@langchain/core`
+
+## Why `withAssembly` instead of a framework hook
+
+The published `@agent-assembly/sdk` alpha exposes governance through the public
+`withAssembly(tools, { gatewayClient })` API. We define real Mastra tools with
+`createTool` and govern their `execute` through `withAssembly` + a local policy
+gateway client, so the governance path runs deterministically in CI with no
+gateway and no live model.
+
+## Prerequisites
+
+- Node.js >= 20 LTS
+- pnpm (`npm install -g pnpm`)
+
+## Install
+
+```bash
+pnpm install
+```
+
+## Run
+
+```bash
+pnpm start
+```
+
+### Expected output
+
+```
+=== Mastra — Agent Assembly Governance Example ===
+
+Tools defined with Mastra's createTool, governed by withAssembly.
+
+Running allowed tool: get_stock_price
+  [ALLOW] {"text":"AASM: $123.45 [mock]"}
+
+Running denied tool: place_trade
+  [BLOCKED] Tool 'place_trade' blocked: Placing trades moves real money — requires human approval.
+
+Done. Mastra tool calls governed by withAssembly + the local policy.
+```
+
+## Test
+
+```bash
+pnpm test
+```
+
+No gateway or API key required. All tests run offline.
+
+## TypeScript type check
+
+```bash
+pnpm typecheck
+```
+
+## Note on `.env.example`
+
+This example uses only mock/offline mode. No provider keys or gateway URL are needed.
+To connect to a real gateway, set `AAASM_GATEWAY_URL` in your environment directly; to
+drive a real LLM with a Mastra Agent, set `OPENAI_API_KEY`.
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `Cannot find module '@agent-assembly/sdk'` | Run `pnpm install` |
+| `Cannot find module '@mastra/core'` | Run `pnpm install` |
+| TypeScript errors | Run `pnpm typecheck` and check the Node.js version |
+
+## Links
+
+- [Mastra](https://mastra.ai)
+- [Agent Assembly Node.js SDK](https://github.com/ai-agent-assembly/node-sdk)
+- [Node.js examples overview](../README.md)
+- [Root examples README](../../README.md)
