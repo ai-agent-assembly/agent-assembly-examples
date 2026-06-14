@@ -1,0 +1,86 @@
+# vercel-ai
+
+A TypeScript example showing how to govern [Vercel AI SDK](https://sdk.vercel.ai) tools with Agent Assembly.
+
+## What this example demonstrates
+
+- Defining tools with the Vercel AI SDK `tool()` factory (the real `ai` package)
+- Wrapping those tools with `withAssembly()` from `@agent-assembly/sdk` + a local-policy `GatewayClient`
+- One **allowed** tool call (`get_weather`) — executes and returns mock output
+- One **denied** tool call (`send_email`) — blocked at the policy layer with `PolicyViolationError`
+- Runs fully offline — no provider key, no live LLM, and no `@langchain/core`
+
+## Why `withAssembly` instead of a framework hook
+
+The published `@agent-assembly/sdk` alpha exposes governance through the public
+`withAssembly(tools, { gatewayClient })` API. We wrap each Vercel AI SDK tool's
+`execute` with the local policy gateway client, so the governance path is exercised
+deterministically in CI with no gateway running.
+
+## Prerequisites
+
+- Node.js >= 20 LTS
+- pnpm (`npm install -g pnpm`)
+
+## Install
+
+```bash
+pnpm install
+```
+
+## Run
+
+```bash
+pnpm start
+```
+
+### Expected output
+
+```
+=== Vercel AI SDK — Agent Assembly Governance Example ===
+
+Tools defined with the Vercel AI SDK `tool()` factory, governed by withAssembly.
+
+Running allowed tool: get_weather
+  [ALLOW] Weather in Taipei: 22°C, partly cloudy. [mock]
+
+Running denied tool: send_email
+  [BLOCKED] Tool 'send_email' blocked: Outbound messaging can exfiltrate data — requires human approval.
+
+Done. Vercel AI SDK tool calls governed by withAssembly + the local policy.
+```
+
+## Test
+
+```bash
+pnpm test
+```
+
+No gateway or API key required. All tests run offline.
+
+## TypeScript type check
+
+```bash
+pnpm typecheck
+```
+
+## Note on `.env.example`
+
+This example uses only mock/offline mode. No provider keys or gateway URL are needed.
+To connect to a real gateway, set `AAASM_GATEWAY_URL` in your environment directly; to
+drive a real LLM, set `OPENAI_API_KEY`.
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `Cannot find module '@agent-assembly/sdk'` | Run `pnpm install` |
+| `Cannot find module 'ai'` | Run `pnpm install` |
+| TypeScript errors | Run `pnpm typecheck` and check the Node.js version |
+
+## Links
+
+- [Vercel AI SDK](https://sdk.vercel.ai)
+- [Agent Assembly Node.js SDK](https://github.com/ai-agent-assembly/node-sdk)
+- [Node.js examples overview](../README.md)
+- [Root examples README](../../README.md)

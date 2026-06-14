@@ -8,6 +8,9 @@ Runnable Node.js and TypeScript examples showing how to integrate Agent Assembly
 |---|---|---|---|
 | [`langchain-js-basic-agent/`](./langchain-js-basic-agent/) | LangChain.js | Tool governance hooks in a LangChain.js-style agent | Intermediate |
 | [`openai-node-tool-policy/`](./openai-node-tool-policy/) | OpenAI Node SDK | Policy enforcement using OpenAI function-calling format | Intermediate |
+| [`vercel-ai/`](./vercel-ai/) | Vercel AI SDK | Governing Vercel AI SDK `tool()` calls with withAssembly | Intermediate |
+| [`langgraph-js/`](./langgraph-js/) | LangGraph.js | Governing tool calls inside a LangGraph.js-style state machine | Intermediate |
+| [`mastra/`](./mastra/) | Mastra | Governing Mastra `createTool` calls with withAssembly | Intermediate |
 | [`custom-tool-policy/`](./custom-tool-policy/) | — (none) | Minimal SDK usage — no agent framework needed | Beginner |
 
 All examples use the `@agent-assembly/sdk` npm package.
@@ -40,6 +43,9 @@ pnpm test
 |---|---|
 | See Agent Assembly with LangChain.js | [`langchain-js-basic-agent/`](./langchain-js-basic-agent/) |
 | See Agent Assembly with OpenAI function-calling | [`openai-node-tool-policy/`](./openai-node-tool-policy/) |
+| See Agent Assembly with the Vercel AI SDK | [`vercel-ai/`](./vercel-ai/) |
+| See Agent Assembly with LangGraph.js | [`langgraph-js/`](./langgraph-js/) |
+| See Agent Assembly with Mastra | [`mastra/`](./mastra/) |
 | Understand the SDK without any framework | [`custom-tool-policy/`](./custom-tool-policy/) |
 
 All examples:
