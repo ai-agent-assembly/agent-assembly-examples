@@ -93,3 +93,81 @@ jobs:
 
       - name: Run smoke tests
         run: pnpm test
+
+  vercel-ai:
+    name: vercel-ai
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: node/vercel-ai
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Type-check
+        run: pnpm typecheck
+
+      - name: Run smoke tests
+        run: pnpm test
+
+  langgraph-js:
+    name: langgraph-js
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: node/langgraph-js
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Type-check
+        run: pnpm typecheck
+
+      - name: Run smoke tests
+        run: pnpm test
+
+  mastra:
+    name: mastra
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: node/mastra
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Type-check
+        run: pnpm typecheck
+
+      - name: Run smoke tests
+        run: pnpm test
