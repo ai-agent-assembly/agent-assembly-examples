@@ -1,0 +1,103 @@
+# pydantic-ai-governed-agent
+
+Demonstrates how to integrate [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly-examples) with [Pydantic AI](https://ai.pydantic.dev/) to enforce governance policy on tool calls before execution.
+
+## What this example demonstrates
+
+- Initializing Agent Assembly with `init_assembly()` in offline `sdk-only` mode.
+- Installing tool-level governance hooks with `PydanticAIAdapter`, which patches `pydantic_ai.tools.Tool._run`.
+- Driving a real Pydantic AI `Agent` with the built-in `TestModel`, so the demo runs **offline with no API key**.
+- Running an **allowed** tool call (`get_weather`), a **denied** tool call (`delete_records`), and a **pending** tool call (`send_email` — requires approval, auto-denied offline).
+- How `PolicyViolationError` is raised when a tool is blocked or rejected during approval.
+
+## Prerequisites
+
+| Requirement | Version |
+|---|---|
+| Python | >= 3.12 |
+| [uv](https://github.com/astral-sh/uv) | latest |
+| Agent Assembly Python SDK | >= 0.0.1a2 |
+
+No running Agent Assembly gateway is required for the offline demo.
+
+> **Version note** — the Agent Assembly Pydantic AI adapter hooks the internal `Tool._run` entry point, which exists in the Pydantic AI `0.1.x`–`0.2.x` line. `pyproject.toml` pins `pydantic-ai>=0.1.0,<0.3.0` so the governance hooks attach. Newer 1.x releases renamed that internal API.
+
+## Setup
+
+```bash
+cd python/pydantic-ai
+uv sync --extra dev
+```
+
+## Run
+
+```bash
+uv run python src/main.py
+```
+
+### Expected output
+
+```
+==============================================================
+  Agent Assembly — Pydantic AI Governed Agent Demo
+==============================================================
+
+Initializing Agent Assembly (gateway: http://localhost:8080, sdk-only mode)...
+  Agent:    pydantic-ai-demo-agent
+  Gateway:  http://localhost:8080
+  Mode:     sdk-only (offline demo)
+
+Policy rules (local simulation of gateway policy):
+  DENY    — delete_records, write_file  (destructive operations)
+  PENDING — send_email                  (requires human approval)
+  ALLOW   — everything else
+
+Running governed tool calls (driven offline by TestModel):
+--------------------------------------------
+  → agent run that calls get_weather
+     ✅ ALLOWED  — get_weather executed (mock response)
+
+  → agent run that calls delete_records
+     ❌ BLOCKED  — Tool 'delete_records' blocked by governance policy: Tool 'delete_records' is blocked by policy rule 'deny_destructive_operations'.
+
+  → agent run that calls send_email
+     ❌ BLOCKED  — Tool 'send_email' rejected during approval: Tool 'send_email' requires approval, but no approver is available in offline mode.
+
+Assembly context shut down.
+```
+
+## Run tests
+
+```bash
+uv run pytest tests/ -v
+```
+
+## Switching to production mode
+
+1. Start an Agent Assembly gateway or use your SaaS workspace URL.
+2. Copy `.env.example` to `.env` and fill in your credentials.
+3. Swap `TestModel` for a real model (e.g. `openai:gpt-4o`) in `src/agent.py` and set `OPENAI_API_KEY`.
+4. Run with gateway environment variables:
+
+```bash
+AGENT_ASSEMBLY_GATEWAY_URL=http://localhost:8080 \
+AGENT_ASSEMBLY_API_KEY=your-key \
+uv run python src/main.py
+```
+
+In production, `init_assembly()` auto-detects Pydantic AI and registers the adapter automatically, and the gateway enforces the policy rules — replace `LocalPolicyEngine` with the gateway-backed interceptor.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `ModuleNotFoundError: agent_assembly` | Run `uv sync` first |
+| `ModuleNotFoundError: pydantic_ai` | Run `uv sync` — `pydantic-ai` is a required dependency |
+| Governance hooks do not fire | Ensure `pydantic-ai` resolves to the pinned `0.1.x`–`0.2.x` range |
+| `PolicyViolationError` in tests | Expected — the deny/pending policy rules are intentional |
+
+## Links
+
+- [Agent Assembly Python SDK](https://github.com/ai-agent-assembly/python-sdk)
+- [Agent Assembly Examples](../../README.md)
+- [Python Examples](../README.md)

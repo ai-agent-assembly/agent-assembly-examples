@@ -1,0 +1,99 @@
+# langgraph-governed-agent
+
+Demonstrates how to integrate [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly-examples) with [LangGraph](https://langchain-ai.github.io/langgraph/) to enforce governance policy on the tools a graph's nodes call — before any tool executes.
+
+## What this example demonstrates
+
+- Initializing Agent Assembly with `init_assembly()` in offline `sdk-only` mode.
+- Installing **node-level** governance hooks with `LangGraphAdapter`, which wraps a compiled `StateGraph`'s nodes.
+- Routing tool calls through LangChain's `AssemblyCallbackHandler` so each tool is checked against policy.
+- A linear graph `START → research → report → END` where:
+  - `research` calls an **allowed** tool (`get_weather`).
+  - `report` calls a **denied** tool (`delete_files` — blocked by policy).
+- How `ToolExecutionBlockedError` halts the graph the moment a blocked tool is reached.
+
+The example runs **fully offline**: the graph is driven with deterministic nodes, so no LLM, API key, or running gateway is required.
+
+## Prerequisites
+
+| Requirement | Version |
+|---|---|
+| Python | >= 3.12 |
+| [uv](https://github.com/astral-sh/uv) | latest |
+| Agent Assembly Python SDK | >= 0.0.1a2 |
+
+No running Agent Assembly gateway is required for the offline demo.
+
+## Setup
+
+```bash
+cd python/langgraph
+uv sync --extra dev
+```
+
+## Run
+
+```bash
+uv run python src/main.py
+```
+
+### Expected output
+
+```
+==============================================================
+  Agent Assembly — LangGraph Governed Agent Demo
+==============================================================
+
+Initializing Agent Assembly (gateway: http://localhost:8080, sdk-only mode)...
+  Agent:    langgraph-demo-agent
+  Gateway:  http://localhost:8080
+  Mode:     sdk-only (offline demo)
+
+Policy rules (local simulation of gateway policy):
+  DENY    — delete_files, write_file  (destructive operations)
+  PENDING — send_email                (requires human approval)
+  ALLOW   — everything else
+
+Invoking governed graph: START → research → report → END
+--------------------------------------------
+  → research node: get_weather
+     ✅ ALLOWED  — gathered notes (mock response)
+  → report node: delete_files
+     ❌ BLOCKED  — Tool 'delete_files' is blocked by policy rule 'deny_destructive_operations'.
+
+Assembly context shut down.
+```
+
+## Run tests
+
+```bash
+uv run pytest tests/ -v
+```
+
+## Switching to production mode
+
+1. Start an Agent Assembly gateway or use your SaaS workspace URL.
+2. Copy `.env.example` to `.env` and fill in your credentials.
+3. Run with gateway environment variables:
+
+```bash
+AGENT_ASSEMBLY_GATEWAY_URL=http://localhost:8080 \
+AGENT_ASSEMBLY_API_KEY=your-key \
+uv run python src/main.py
+```
+
+In production, `init_assembly()` auto-detects LangGraph and registers the adapter automatically, and the gateway enforces the policy rules — replace `LocalPolicyEngine` with the gateway-backed interceptor.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `ModuleNotFoundError: agent_assembly` | Run `uv sync` first |
+| `ModuleNotFoundError: langgraph` | Run `uv sync` — `langgraph` is a required dependency |
+| `ToolExecutionBlockedError` in tests | Expected — the deny/pending policy rules are intentional |
+
+## Links
+
+- [Agent Assembly Python SDK](https://github.com/ai-agent-assembly/python-sdk)
+- [Agent Assembly Examples](../../README.md)
+- [Python Examples](../README.md)
