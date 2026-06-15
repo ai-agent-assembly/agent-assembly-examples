@@ -19,7 +19,7 @@ Because LlamaIndex does not yet have a native Agent Assembly adapter, this examp
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1a2 |
+| Agent Assembly Python SDK | >= 0.0.1b2 |
 
 No API key or running gateway is required for the offline demo.
 
