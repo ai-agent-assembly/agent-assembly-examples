@@ -4,11 +4,13 @@ version = "0.1.0"
 description = "Agent Assembly governance demo with Pydantic AI"
 requires-python = ">=3.12"
 dependencies = [
-    "agent-assembly>=0.0.1a2",
-    # The Agent Assembly Pydantic AI adapter patches `Tool._run`, which is
-    # present in the 0.1.x–0.2.x line. Newer 1.x releases renamed that internal
-    # entry point; pin to the supported range so governance hooks attach.
-    "pydantic-ai>=0.1.0,<0.3.0",
+    "agent-assembly>=0.0.1b2",
+    # The Agent Assembly Pydantic AI adapter installs a version-tolerant tool
+    # hook: it patches `AbstractToolset.call_tool` (and concrete toolsets such
+    # as `FunctionToolset`) on pydantic-ai >=0.3.0, and falls back to the
+    # internal `Tool._run` on <0.3.0. No upper pin is needed; governance
+    # attaches across the 0.3.x–1.x line.
+    "pydantic-ai>=0.3.0",
 ]
 
 [project.optional-dependencies]

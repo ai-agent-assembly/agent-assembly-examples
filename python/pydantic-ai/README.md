@@ -5,7 +5,7 @@ Demonstrates how to integrate [Agent Assembly](https://github.com/ai-agent-assem
 ## What this example demonstrates
 
 - Initializing Agent Assembly with `init_assembly()` in offline `sdk-only` mode.
-- Installing tool-level governance hooks with `PydanticAIAdapter`, which patches `pydantic_ai.tools.Tool._run`.
+- Installing tool-level governance hooks with `PydanticAIAdapter`, which patches Pydantic AI's tool-execution path (`AbstractToolset.call_tool` on `>=0.3.0`, `Tool._run` on `<0.3.0`).
 - Driving a real Pydantic AI `Agent` with the built-in `TestModel`, so the demo runs **offline with no API key**.
 - Running an **allowed** tool call (`get_weather`), a **denied** tool call (`delete_records`), and a **pending** tool call (`send_email` — requires approval, auto-denied offline).
 - How `PolicyViolationError` is raised when a tool is blocked or rejected during approval.
@@ -16,11 +16,11 @@ Demonstrates how to integrate [Agent Assembly](https://github.com/ai-agent-assem
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1a2 |
+| Agent Assembly Python SDK | >= 0.0.1b2 |
 
 No running Agent Assembly gateway is required for the offline demo.
 
-> **Version note** — the Agent Assembly Pydantic AI adapter hooks the internal `Tool._run` entry point, which exists in the Pydantic AI `0.1.x`–`0.2.x` line. `pyproject.toml` pins `pydantic-ai>=0.1.0,<0.3.0` so the governance hooks attach. Newer 1.x releases renamed that internal API.
+> **Version note** — the Agent Assembly Pydantic AI adapter installs a version-tolerant tool hook. On `pydantic-ai>=0.3.0` it patches `AbstractToolset.call_tool` (including concrete toolsets such as `FunctionToolset`); on `<0.3.0` it falls back to the internal `Tool._run`. `pyproject.toml` therefore requires `pydantic-ai>=0.3.0` with no upper pin — governance attaches across the `0.3.x`–`1.x` line.
 
 ## Setup
 
@@ -93,7 +93,7 @@ In production, `init_assembly()` auto-detects Pydantic AI and registers the adap
 |---|---|
 | `ModuleNotFoundError: agent_assembly` | Run `uv sync` first |
 | `ModuleNotFoundError: pydantic_ai` | Run `uv sync` — `pydantic-ai` is a required dependency |
-| Governance hooks do not fire | Ensure `pydantic-ai` resolves to the pinned `0.1.x`–`0.2.x` range |
+| Governance hooks do not fire | Ensure `pydantic-ai` resolves to `>=0.3.0` (or `<0.3.0` for the legacy `Tool._run` path) |
 | `PolicyViolationError` in tests | Expected — the deny/pending policy rules are intentional |
 
 ## Links
