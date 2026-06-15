@@ -4,8 +4,8 @@ version = "0.1.0"
 description = "Agent Assembly governance demo with LlamaIndex tool wrapping"
 requires-python = ">=3.12"
 dependencies = [
-    "agent-assembly>=0.0.1a2",
-    "llama-index-core>=0.10.0",
+    "agent-assembly>=0.0.1b2",
+    "llama-index-core>=0.14.22",
 ]
 
 [project.optional-dependencies]
