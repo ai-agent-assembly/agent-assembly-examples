@@ -199,11 +199,20 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: scenarios/policy-enforcement/node/pnpm-lock.yaml
 
-      - name: Run tests
+      - name: Install and typecheck
         run: |
           if [ -d "scenarios/policy-enforcement/node" ]; then
             cd scenarios/policy-enforcement/node
             pnpm install
+            pnpm run build
+          else
+            echo "scenarios/policy-enforcement/node not yet present — skipping"
+          fi
+
+      - name: Run tests
+        run: |
+          if [ -d "scenarios/policy-enforcement/node" ]; then
+            cd scenarios/policy-enforcement/node
             pnpm test
           else
             echo "scenarios/policy-enforcement/node not yet present — skipping"
@@ -268,11 +277,20 @@ jobs:
           cache: "pnpm"
           cache-dependency-path: scenarios/approval-gates/node/pnpm-lock.yaml
 
-      - name: Run tests
+      - name: Install and typecheck
         run: |
           if [ -d "scenarios/approval-gates/node" ]; then
             cd scenarios/approval-gates/node
             pnpm install
+            pnpm run build
+          else
+            echo "scenarios/approval-gates/node not yet present — skipping"
+          fi
+
+      - name: Run tests
+        run: |
+          if [ -d "scenarios/approval-gates/node" ]; then
+            cd scenarios/approval-gates/node
             pnpm test
           else
             echo "scenarios/approval-gates/node not yet present — skipping"
