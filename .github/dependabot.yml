@@ -21,6 +21,15 @@ updates:
     labels:
       - "dependencies"
       - "node"
+    ignore:
+      # TypeScript 6.0.x regresses NodeNext resolution of `node:` builtin
+      # imports (TS2591 "Cannot find name 'node:fs'"), breaking the node
+      # scenarios that use `node:`-prefixed imports. The affected package.json
+      # files pin `typescript ^5.9.3` and say "Bump to ^6 once fixed upstream".
+      # Skip major typescript bumps until the upstream regression is fixed.
+      # See PRs #104, #105.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "pip"
     directories:
