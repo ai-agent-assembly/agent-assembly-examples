@@ -1,0 +1,39 @@
+# Live-core enforcement — sample governance policy
+#
+# This is a REAL Agent Assembly section-based policy, loaded into a REAL
+# aa-gateway by the bundled docker-compose stack. The gateway evaluates it on
+# every pre-execution check the SDK forwards from the runtime.
+#
+# Schema reference: agent-assembly/schemas/examples/balanced.yaml in the
+# monorepo. The section that matters for this example is `tools`: each tool maps
+# to an `allow` flag. A tool with `allow: false` is denied; the SDK's
+# `check_tool_start` then returns status=deny and the tool never executes.
+#
+# Loaded into the gateway via the compose stack:
+#   AA_POLICY=/etc/aa/policy.yaml  (mounted read-only — see docker-compose.yml)
+
+# Seconds before an approval request times out.
+approval_timeout_secs: 300
+
+tools:
+  # Allowed: a read-only tool. The example's first call uses this and is
+  # permitted by the gateway.
+  read_file:
+    allow: true
+    limit_per_hour: 50
+
+  # Denied: a destructive tool. The example's second call uses this and is
+  # blocked by the gateway before it can run.
+  delete_file:
+    allow: false
+
+# Sensitive-data patterns the runtime redacts in audit records. Included to show
+# a complete section-based policy; not exercised by the two demo tool calls.
+data:
+  sensitive_patterns:
+    - "sk-[A-Za-z0-9]{32,}"
+    - "ghp_[A-Za-z0-9]{36}"
+    - "AKIA[0-9A-Z]{16}"
+
+budget:
+  daily_limit_usd: 5.00
