@@ -7,30 +7,43 @@ staging environments before connecting to a production gateway.
 ## Concept
 
 In production, every agent process runs alongside an Agent Assembly sidecar that
-intercepts tool calls and enforces policy. In local development you can spin up
-a lightweight gateway container that behaves the same way.
+intercepts tool calls and enforces policy. The agent reaches it **through the
+SDK** — it never speaks the gateway's wire protocol itself. The SDK's
+`init_assembly` / `initAssembly` entrypoint opens a session, and the SDK's
+client transport (aa-sdk-client) talks to core over gRPC/UDS:
 
 ```
-┌─────────────────────────────────────────────────┐
-│  Your machine                                   │
-│                                                 │
-│  ┌──────────────────┐     HTTP :8080            │
-│  │  python-agent /  │ ─────────────────────►   │
-│  │  node-agent      │ ◄─────────────────────   │
-│  └──────────────────┘  policy decision +        │
-│                         audit record            │
-│                                                 │
-│  ┌──────────────────────────────────────────┐  │
-│  │  Docker Compose                          │  │
-│  │  assembly-gateway  :8080 (HTTP)          │  │
-│  │                    :50051 (gRPC, prod)   │  │
-│  └──────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  Your machine                                              │
+│                                                            │
+│  ┌──────────────────┐                                      │
+│  │  python-agent /  │   init_assembly() / client.call_tool │
+│  │  node-agent      │                                       │
+│  └────────┬─────────┘                                      │
+│           │  Agent Assembly SDK                            │
+│           ▼                                                 │
+│  ┌──────────────────┐   aa-sdk-client (gRPC/UDS)           │
+│  │  SDK client      │ ─────────────────────────────►       │
+│  └──────────────────┘ ◄─────────────────────────────       │
+│                          policy decision + audit record     │
+│  ┌──────────────────────────────────────────────────────┐ │
+│  │  Docker Compose                                        │ │
+│  │  assembly-gateway (core)                               │ │
+│  │    :8080  (SDK session + governed calls)               │ │
+│  │    :50051 (gRPC, production transport)                 │ │
+│  └──────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────┘
 ```
 
 The `assembly-gateway` container in this example is a **lightweight mock** that
-simulates the gateway API. Swap the image for the real gateway image when you
-have access to it.
+stands in for core. The agents do **not** call its endpoints directly — they go
+through the SDK, and the SDK's client connects to it. Swap the image for the
+real gateway image when you have access to it.
+
+> **Architecture note (ADR 0004):** agents always govern tool calls through the
+> SDK entrypoint, never by hand-rolling HTTP requests to core. The SDK owns all
+> transport to core via aa-sdk-client. This example mirrors that: the only thing
+> talking to the gateway is the SDK client.
 
 ## Prerequisites
 
@@ -39,7 +52,7 @@ have access to it.
 - **Node.js** 18+ (for the Node.js agent example)
 
 The agent examples also run **offline** (without Docker) by omitting
-`ASSEMBLY_GATEWAY_URL`. An offline fallback policy is used in that case.
+`ASSEMBLY_GATEWAY_URL`. The SDK then uses an offline fallback policy.
 
 ## Ports and environment variables
 
@@ -49,7 +62,8 @@ The agent examples also run **offline** (without Docker) by omitting
 | assembly-gateway  | 50051 | gRPC     | _(production only)_      |
 
 Set `ASSEMBLY_GATEWAY_URL=http://localhost:8080` before running agents when the
-gateway container is up.
+gateway container is up. This is the **core address the SDK connects to** — the
+agent code itself never reads it beyond passing it to `init_assembly`.
 
 ## Setup and run
 
@@ -82,6 +96,31 @@ node examples/node-agent/agent.js
 bash scripts/stop.sh
 ```
 
+## How the agents use the SDK
+
+Both agents follow the same shape a real integration uses:
+
+```python
+# Python — real integration:
+from agent_assembly import init_assembly
+
+with init_assembly(gateway_url=GATEWAY_URL, agent_id="my-agent") as ctx:
+    ctx.client.call_tool("read_file", path="/data/report.csv")
+```
+
+```js
+// Node — real integration:
+import { initAssembly } from "@agent-assembly/sdk";
+
+const ctx = await initAssembly({ gatewayUrl: GATEWAY_URL, agentId: "my-agent" });
+await ctx.client.callTool("read_file", { path: "/data/report.csv" });
+```
+
+To keep this scenario install-free and runnable offline, each agent ships a tiny
+local stand-in for the SDK surface (clearly marked in the source). It exposes the
+same `init_assembly` → `client.call_tool` flow and routes governed calls through
+the SDK client to core — never via ad-hoc HTTP from the agent.
+
 ## Expected output
 
 When the gateway is running:
@@ -89,18 +128,20 @@ When the gateway is running:
 ```
 === Agent Assembly — Sidecar Runtime Example ===
 
-Gateway: http://localhost:8080  (connected)
+Core:    http://localhost:8080  (connected via SDK)
 
---- Calling governed tools via the local runtime ---
+--- Calling governed tools via the SDK -> local runtime ---
 
   → read_file(path='/data/report.csv')
   [GATEWAY] decision=allow   reason=permitted by default policy
     ✓ allowed
 
+  Audit ID: audit-...
   → delete_file(path='/data/important.csv')
   [GATEWAY] decision=deny    reason=destructive operations are blocked by policy
     ✗ denied
 
+  Audit ID: audit-...
 Total tool calls: 2
 ```
 
@@ -109,13 +150,13 @@ When running offline (no gateway):
 ```
 === Agent Assembly — Sidecar Runtime Example ===
 
-Gateway: not configured — running in offline mode
+Core:    not configured — SDK running in offline mode
          Set ASSEMBLY_GATEWAY_URL=http://localhost:8080 to connect.
          See scripts/start.sh to start the local runtime.
 
---- Calling governed tools via offline policy ---
+--- Calling governed tools via the SDK (offline policy) ---
 
-  ...same output using local mock policy...
+  ...same allow/deny output using the SDK's offline fallback policy...
 ```
 
 ## Troubleshooting
@@ -146,9 +187,9 @@ export ASSEMBLY_GATEWAY_URL=http://localhost:8080
 
 - In production, replace the `mock-gateway` build in `docker-compose.yml` with
   the real Agent Assembly gateway image from your container registry.
-- The real gateway uses gRPC (port 50051) as the primary transport; the HTTP
-  port is for the REST API and dashboard.
+- The real gateway uses gRPC (port 50051) as the primary transport; the SDK's
+  aa-sdk-client connects over it. The HTTP port backs the REST API and dashboard.
 - Agent identity, API keys, and policy are configured in the gateway — not in
   the agent script itself.
 - The `ASSEMBLY_GATEWAY_URL` environment variable is the only change needed to
-  point an agent at a different environment (local → staging → production).
+  point the SDK at a different environment (local → staging → production).
