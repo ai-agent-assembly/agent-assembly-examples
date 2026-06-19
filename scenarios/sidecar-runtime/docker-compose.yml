@@ -15,9 +15,9 @@ services:
     build:
       context: mock-gateway
     ports:
-      - "8080:8080"   # HTTP health check + REST API
-      # Port 50051 (gRPC) is used by the production gateway.
-      # The mock uses HTTP only for simplicity.
+      - "8080:8080"   # SDK session + governed calls (aa-sdk-client connects here)
+      # Port 50051 (gRPC) is the production gateway transport for aa-sdk-client.
+      # The mock uses HTTP only for simplicity; the SDK is still the only caller.
     environment:
       - LOG_LEVEL=info
     healthcheck:
