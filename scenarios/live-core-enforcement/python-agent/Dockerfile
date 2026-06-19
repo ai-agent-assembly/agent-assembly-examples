@@ -29,4 +29,10 @@ RUN pip install --no-cache-dir "agent-assembly>=0.0.2a1"
 WORKDIR /app
 COPY agent.py /app/agent.py
 
+# Run as a non-root user. The agent only needs to read/write the runtime socket
+# on the shared volume; it never needs root.
+RUN useradd --create-home --uid 10001 appuser \
+    && chown -R appuser:appuser /app
+USER appuser
+
 CMD ["python", "/app/agent.py"]
