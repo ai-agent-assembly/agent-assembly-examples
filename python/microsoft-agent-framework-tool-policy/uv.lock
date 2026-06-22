@@ -48,7 +48,7 @@ wheels = [
 [[package]]
 name = "agent-assembly"
 version = "0.0.1b4"
-source = { git = "https://github.com/ai-agent-assembly/python-sdk.git?branch=master#7181dc693192bc29d7bf85a6cf6eac5a8f78c4bf" }
+source = { git = "https://github.com/ai-agent-assembly/python-sdk.git?branch=master#7d389dcc4440a81a95aa2a6bf64e7ddb2594cd48" }
 dependencies = [
     { name = "grpcio" },
     { name = "httpx" },
