@@ -26,11 +26,6 @@ live = [
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",
-    # The smoke drives the real framework (it builds `@af.tool` FunctionTools), so
-    # CI's `uv sync --extra dev` must install agent-framework or the suite skips
-    # entirely and pytest exits 5 (no tests collected). `[tool.uv] prerelease`
-    # below allows its pre-release sub-distributions to resolve.
-    "agent-framework>=1.9,<2",
 ]
 
 [tool.pytest.ini_options]
