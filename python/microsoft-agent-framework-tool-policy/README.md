@@ -1,0 +1,122 @@
+# microsoft-agent-framework-governed-agent
+
+Demonstrates how to integrate [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly-examples) with [Microsoft Agent Framework](https://github.com/microsoft/agent-framework) to enforce governance policy on tool calls before execution.
+
+## What this example demonstrates
+
+- Initializing Agent Assembly with `init_assembly()` in offline `sdk-only` mode.
+- Installing tool-level governance hooks with `MicrosoftAgentFrameworkAdapter`, which patches `agent_framework.FunctionTool.invoke` — the single async coroutine through which **every** function tool executes.
+- Driving the real framework's `FunctionTool.invoke` so a governed tool is exercised exactly as an Agent Framework `ChatAgent` would invoke it — **offline, no chat model and no API key**.
+- Running an **allowed** tool call (`get_weather`), a **denied** tool call (`delete_records`), and a **pending** tool call (`send_email` — requires approval, auto-denied offline).
+- How `PolicyViolationError` is raised when a tool is blocked or rejected during approval.
+
+## Mock vs. live
+
+Like the rest of this gallery, the example runs two ways:
+
+- **`--mock` (default, what CI runs):** replays the three governed tool calls through the `LocalPolicyEngine` decision contract **without importing `agent_framework`**, so it needs only the SDK + `dev` deps. This is the offline path CI exercises.
+- **live (no flag):** drives the **real** `agent_framework.FunctionTool.invoke` through the installed adapter — a denied tool is short-circuited by the patched `invoke` before its body runs. Needs the `live` extra.
+
+## Prerequisites
+
+| Requirement | Version |
+|---|---|
+| Python | >= 3.12 |
+| [uv](https://github.com/astral-sh/uv) | latest |
+| Agent Assembly Python SDK | >= 0.0.1b2 |
+
+No running Agent Assembly gateway is required for the offline demo.
+
+> **Pre-release note** — Microsoft Agent Framework ships on PyPI as `agent-framework` and **imports as `agent_framework`**. It pulls **pre-release** sub-distributions, so uv refuses to resolve the `live` extra without `--prerelease=allow`. `pip` resolves them without a flag.
+
+## Setup
+
+```bash
+cd python/microsoft-agent-framework-tool-policy
+uv sync --extra dev                              # CI / mock path (no agent-framework)
+# For the live integration:
+uv sync --extra live --extra dev --prerelease=allow
+```
+
+## Run
+
+```bash
+# Offline mock (no agent-framework needed):
+uv run python src/main.py --mock
+
+# Live (requires the `live` extra installed as above):
+uv run python src/main.py
+```
+
+### Expected output (`--mock`)
+
+```
+==============================================================
+  Agent Assembly — Microsoft Agent Framework Governed Agent Demo
+==============================================================
+
+Initializing Agent Assembly (gateway: http://localhost:8080, sdk-only mode, mock)...
+  Agent:    microsoft-agent-framework-demo-agent
+  Gateway:  http://localhost:8080
+  Mode:     sdk-only (offline demo)
+
+Policy rules (local simulation of gateway policy):
+  DENY    — delete_records, write_file  (destructive operations)
+  PENDING — send_email                  (requires human approval)
+  ALLOW   — everything else
+
+Running governed tool calls (mock — policy contract, offline):
+--------------------------------------------
+  → invoke tool get_weather
+     ✅ ALLOWED  — get_weather would execute
+
+  → invoke tool delete_records
+     ❌ BLOCKED  — Tool 'delete_records' is blocked by policy rule 'deny_destructive_operations'.
+
+  → invoke tool send_email
+     ❌ BLOCKED  — Tool 'send_email' requires approval, but no approver is available in offline mode.
+
+Assembly context shut down.
+```
+
+The **live** run prints the same allow/deny/pending outcomes, but each line is the result of the real `FunctionTool.invoke` passing through the patched governance hook (a denied tool raises `PolicyViolationError` before its body runs).
+
+## Run tests
+
+```bash
+# The governance smoke tests import the real framework; install the live extra:
+uv sync --extra live --extra dev --prerelease=allow
+uv run pytest tests/ -v
+```
+
+The smoke tests `importorskip("agent_framework")`, so they **skip cleanly** (rather than fail) when only the `dev` extra is installed — the same graceful-degradation convention the live framework smokes use.
+
+## Switching to production mode
+
+1. Start an Agent Assembly gateway or use your SaaS workspace URL.
+2. Copy `.env.example` to `.env` and fill in your credentials.
+3. Wire a real chat client into an Agent Framework `ChatAgent` with these tools and set the provider key (e.g. `OPENAI_API_KEY` / `AZURE_OPENAI_ENDPOINT`).
+4. Run with gateway environment variables:
+
+```bash
+AGENT_ASSEMBLY_GATEWAY_URL=http://localhost:8080 \
+AGENT_ASSEMBLY_API_KEY=your-key \
+uv run python src/main.py
+```
+
+In production, `init_assembly()` auto-detects Microsoft Agent Framework and registers the adapter automatically, and the gateway enforces the policy rules — replace `LocalPolicyEngine` with the gateway-backed interceptor.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `ModuleNotFoundError: agent_assembly` | Run `uv sync` first |
+| `ModuleNotFoundError: agent_framework` | Install the live extra: `uv sync --extra live --prerelease=allow` |
+| uv refuses to resolve `agent-framework` | Add `--prerelease=allow` — its sub-distributions are pre-releases |
+| `PolicyViolationError` in tests | Expected — the deny/pending policy rules are intentional |
+
+## Links
+
+- [Agent Assembly Python SDK](https://github.com/ai-agent-assembly/python-sdk)
+- [Agent Assembly Examples](../../README.md)
+- [Python Examples](../README.md)

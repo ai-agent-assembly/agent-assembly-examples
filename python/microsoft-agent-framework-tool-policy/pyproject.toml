@@ -1,0 +1,54 @@
+[project]
+name = "microsoft-agent-framework-governed-agent"
+version = "0.1.0"
+description = "Agent Assembly governance demo with Microsoft Agent Framework"
+requires-python = ">=3.12"
+dependencies = [
+    "agent-assembly>=0.0.1b2",
+]
+
+[project.optional-dependencies]
+# The live integration drives the real Microsoft Agent Framework. The offline
+# smoke (what CI runs with `--extra dev`) needs none of this heavy, pre-release
+# transitive tree — its governance assertions `importorskip("agent_framework")`
+# and skip cleanly when it is absent.
+#
+# Microsoft Agent Framework ships on PyPI as `agent-framework` and imports as the
+# top-level module `agent_framework`. The Agent Assembly adapter patches
+# `agent_framework.FunctionTool.invoke` — the single async coroutine through which
+# every function tool executes — so governance attaches across the 1.x line.
+# NOTE: `agent-framework` pulls pre-release sub-distributions, so an installer that
+# does not allow pre-releases (uv) needs `--prerelease=allow`:
+#     uv sync --extra live --prerelease=allow
+live = [
+    "agent-framework>=1.9,<2",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+
+[tool.uv]
+# `agent-framework` (the `live` extra) pulls pre-release sub-distributions, which
+# uv refuses to resolve by default. Allow pre-releases for this example so
+# `uv lock` / `uv sync --extra live` resolve without a per-command flag. The base
+# / `dev` install path pulls no pre-releases regardless.
+prerelease = "allow"
+
+[tool.uv.sources]
+# Track the SDK's git master so the example validates against the merged
+# adapter until 0.0.1b5 publishes it to PyPI. Revert to the PyPI pin then.
+agent-assembly = { git = "https://github.com/ai-agent-assembly/python-sdk.git", branch = "master" }
+
+[tool.mypy]
+# The Microsoft Agent Framework (`agent_framework`) ships no type stubs and is
+# only present under the `live` extra, so its import is unresolved under the
+# `dev`-only typecheck. Treat it as untyped rather than failing the whole run.
+[[tool.mypy.overrides]]
+module = "agent_framework"
+ignore_missing_imports = true
