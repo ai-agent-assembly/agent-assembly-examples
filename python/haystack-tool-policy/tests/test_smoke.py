@@ -22,7 +22,7 @@ _BLOCKED_MARKER = "[BLOCKED by governance policy]"
 
 
 @pytest.fixture
-def governed():  # noqa: ANN201 — yields (tools, calls-record) with the adapter installed
+def governed():  # noqa: ANN201
     tools_module.EXECUTED.clear()
     patch = HaystackPatch(LocalPolicyEngine())
     assert patch.apply() is True, "Haystack adapter did not install"
