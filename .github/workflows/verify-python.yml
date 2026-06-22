@@ -86,3 +86,22 @@ jobs:
 
       - name: Run smoke tests
         run: uv run pytest tests/ -v
+
+  agno-tool-policy:
+    name: agno-tool-policy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python/agno-tool-policy
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Run smoke tests
+        run: uv run pytest tests/ -v
