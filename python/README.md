@@ -15,6 +15,7 @@ This directory contains runnable Python examples showing how to integrate Agent 
 | `langgraph/`                       | LangGraph        | Node-level governance on a compiled `StateGraph`, blocking a destructive tool mid-graph |
 | `pydantic-ai/`                     | Pydantic AI      | Tool-call governance driven offline by `TestModel` (allow / deny / pending) |
 | `google-adk/`                      | Google ADK       | Scripted offline tool trajectory governing `BaseTool.run_async` (no cloud creds) |
+| `smolagents-tool-policy/`          | Smolagents       | Govern real `smolagents.Tool` calls via `Tool.__call__`, blocking a destructive tool offline (no model creds) |
 
 All examples use the `agent-assembly` Python package (available on PyPI).
 
