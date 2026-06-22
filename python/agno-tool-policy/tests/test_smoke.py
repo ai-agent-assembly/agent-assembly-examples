@@ -9,9 +9,10 @@ The deny test is the negative control — it fails if governance is a no-op.
 from __future__ import annotations
 
 from collections.abc import Iterator
+from typing import Any
 
 import pytest
-from agno.tools.function import FunctionCall
+from agno.tools.function import Function, FunctionCall, FunctionExecutionResult
 
 from agent_assembly.adapters.agno import AgnoPatch
 
@@ -33,20 +34,20 @@ def governed() -> Iterator[None]:
         patch.revert()
 
 
-def _run(function: object, arguments: dict) -> object:
+def _run(function: Function, arguments: dict[str, Any]) -> FunctionExecutionResult:
     return FunctionCall(function=function, arguments=arguments).execute()
 
 
 def test_get_weather_is_allowed(governed: None) -> None:
     result = _run(get_weather, {"city": "London"})
     assert result.status == "success"
-    assert "London" in result.result
+    assert "London" in str(result.result)
 
 
 def test_summarize_docs_is_allowed(governed: None) -> None:
     result = _run(summarize_docs, {"topic": "governance"})
     assert result.status == "success"
-    assert "governance" in result.result
+    assert "governance" in str(result.result)
 
 
 def test_execute_sql_is_denied(governed: None) -> None:
@@ -67,7 +68,7 @@ def test_allowed_tool_body_runs() -> None:
     # Without the patch applied, the real tool body runs and returns its output.
     result = _run(get_weather, {"city": "Paris"})
     assert result.status == "success"
-    assert "Paris" in result.result
+    assert "Paris" in str(result.result)
 
 
 def test_init_assembly_sdk_only_requires_no_gateway() -> None:
