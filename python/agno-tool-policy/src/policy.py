@@ -46,6 +46,8 @@ class LocalPolicyEngine:
         if tool_name in DENIED_TOOLS:
             return {
                 "status": "deny",
-                "reason": (f"Tool '{tool_name}' is blocked by policy rule 'deny_arbitrary_execution'."),
+                "reason": (
+                    f"Tool '{tool_name}' is blocked by policy rule 'deny_arbitrary_execution'."
+                ),
             }
         return {"status": "allow"}

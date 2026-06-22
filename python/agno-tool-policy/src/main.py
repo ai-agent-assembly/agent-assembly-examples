@@ -26,7 +26,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from agno.tools.function import FunctionCall
+from agno.tools.function import Function, FunctionCall
 
 from agent_assembly import init_assembly
 from agent_assembly.adapters.agno import AgnoPatch
@@ -43,7 +43,7 @@ _DEMO_CALLS = [
 ]
 
 
-def _run_governed_call(function: object, arguments: dict) -> None:
+def _run_governed_call(function: Function, arguments: dict[str, str]) -> None:
     """Run a real Agno tool through the patched FunctionCall.execute.
 
     This is the exact call an Agno ``Agent`` makes to execute a tool — the
@@ -97,7 +97,9 @@ def main() -> None:
         # idempotent, so we must revert the no-op hook before installing ours.)
         AgnoPatch(policy).revert()
         patch = AgnoPatch(policy)
-        assert patch.apply(), "Agno governance hook did not install — is agno importable?"
+        assert patch.apply(), (
+            "Agno governance hook did not install — is agno importable?"
+        )
 
         print("Agno governance hook installed on FunctionCall.execute.")
         print("Tools governed: get_weather, summarize_docs, execute_sql")
