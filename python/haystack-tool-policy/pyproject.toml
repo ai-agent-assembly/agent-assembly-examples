@@ -19,3 +19,9 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.uv.sources]
+# Track the SDK's git master so the example validates against the latest merged
+# adapter before 0.0.1b5 publishes it to PyPI. Switch back to the PyPI release
+# pin once 0.0.1b5 is out.
+agent-assembly = { git = "https://github.com/ai-agent-assembly/python-sdk.git", branch = "master" }
