@@ -8,9 +8,13 @@ executes* (the no-op guard — a pass-through adapter would let the body run and
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+
 import pytest
 
 pytest.importorskip("haystack.tools", reason="haystack-ai is not installed")
+
+from haystack.tools import Tool  # noqa: E402
 
 from agent_assembly.adapters.haystack import HaystackPatch  # noqa: E402
 
@@ -22,7 +26,7 @@ _BLOCKED_MARKER = "[BLOCKED by governance policy]"
 
 
 @pytest.fixture
-def governed():  # noqa: ANN201
+def governed() -> Iterator[list[Tool]]:
     tools_module.EXECUTED.clear()
     patch = HaystackPatch(LocalPolicyEngine())
     assert patch.apply() is True, "Haystack adapter did not install"
@@ -33,30 +37,30 @@ def governed():  # noqa: ANN201
         tools_module.EXECUTED.clear()
 
 
-def _by_name(tools, name):  # noqa: ANN001, ANN202
+def _by_name(tools: list[Tool], name: str) -> Tool:
     return next(t for t in tools if t.name == name)
 
 
-def test_allowed_tool_runs(governed) -> None:  # noqa: ANN001
+def test_allowed_tool_runs(governed: list[Tool]) -> None:
     result = _by_name(governed, "query_index").invoke(query="agent assembly docs")
     assert "Index results" in result
     assert _BLOCKED_MARKER not in result
     assert tools_module.EXECUTED == ["query_index"]
 
 
-def test_summarize_tool_runs(governed) -> None:  # noqa: ANN001
+def test_summarize_tool_runs(governed: list[Tool]) -> None:
     result = _by_name(governed, "summarize_docs").invoke(topic="governance")
     assert "Summary for" in result
     assert _BLOCKED_MARKER not in result
 
 
-def test_denied_tool_is_blocked(governed) -> None:  # noqa: ANN001
+def test_denied_tool_is_blocked(governed: list[Tool]) -> None:
     result = _by_name(governed, "execute_sql").invoke(sql="DROP TABLE users; --")
     assert _BLOCKED_MARKER in result
     assert "deny_arbitrary_execution" in result
 
 
-def test_denied_tool_body_never_runs(governed) -> None:  # noqa: ANN001
+def test_denied_tool_body_never_runs(governed: list[Tool]) -> None:
     """The no-op guard: a denied tool's underlying function must not execute."""
     _by_name(governed, "execute_sql").invoke(sql="SELECT * FROM secrets")
     assert "execute_sql" not in tools_module.EXECUTED, (
