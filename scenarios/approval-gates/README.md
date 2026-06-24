@@ -72,7 +72,7 @@ Node.js implementation:
 
 ```bash
 cd scenarios/approval-gates/python
-uv sync
+uv sync --extra dev
 uv run python src/main.py
 ```
 
