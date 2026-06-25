@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Agent Assembly governance demo with Smolagents (Hugging Face)"
 requires-python = ">=3.12"
 dependencies = [
-    "agent-assembly>=0.0.1b2",
+    "agent-assembly>=0.0.1b5",
     # smolagents is light (no chromadb-style native tree), so it stays in the base
     # deps: the demo governs *real* smolagents.Tool instances through the SDK's
     # native adapter, both offline and live. Pinned <2.0 to the 1.x line whose
@@ -32,8 +32,3 @@ pythonpath = ["."]
 [[tool.mypy.overrides]]
 module = ["smolagents", "smolagents.*"]
 ignore_missing_imports = true
-
-[tool.uv.sources]
-# Track the SDK's git master so the example validates against the merged
-# adapter until 0.0.1b5 publishes it to PyPI. Revert to the PyPI pin then.
-agent-assembly = { git = "https://github.com/ai-agent-assembly/python-sdk.git", branch = "master" }
