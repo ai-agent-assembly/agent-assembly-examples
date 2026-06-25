@@ -5,9 +5,8 @@ description = "Agent Assembly governance demo with the native Agno adapter"
 requires-python = ">=3.12"
 dependencies = [
     # Requires the agent-assembly release that ships the native Agno adapter
-    # (agent_assembly.adapters.agno, AAASM-3537). Until that release is on PyPI,
-    # install the SDK from the python-sdk repo's AAASM-3537 branch.
-    "agent-assembly>=0.0.1b4",
+    # (agent_assembly.adapters.agno, AAASM-3537), published on PyPI as 0.0.1b5.
+    "agent-assembly>=0.0.1b5",
     "agno>=2.0.0",
 ]
 
@@ -19,8 +18,3 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-
-[tool.uv.sources]
-# Track the SDK's git master so the example validates against the merged
-# adapter until 0.0.1b5 publishes it to PyPI. Revert to the PyPI pin then.
-agent-assembly = { git = "https://github.com/ai-agent-assembly/python-sdk.git", branch = "master" }
