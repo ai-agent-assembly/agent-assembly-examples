@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Agent Assembly governance demo with Microsoft Agent Framework"
 requires-python = ">=3.12"
 dependencies = [
-    "agent-assembly>=0.0.1b2",
+    "agent-assembly>=0.0.1b5",
 ]
 
 [project.optional-dependencies]
@@ -39,11 +39,6 @@ asyncio_mode = "auto"
 # `uv lock` / `uv sync --extra live` resolve without a per-command flag. The base
 # / `dev` install path pulls no pre-releases regardless.
 prerelease = "allow"
-
-[tool.uv.sources]
-# Track the SDK's git master so the example validates against the merged
-# adapter until 0.0.1b5 publishes it to PyPI. Revert to the PyPI pin then.
-agent-assembly = { git = "https://github.com/ai-agent-assembly/python-sdk.git", branch = "master" }
 
 [tool.mypy]
 # The Microsoft Agent Framework (`agent_framework`) ships no type stubs and is
