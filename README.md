@@ -39,6 +39,7 @@ workflows — then go deeper in the docs.
 | See audit/trace output              | [`scenarios/audit-trace/`](./scenarios/audit-trace/README.md) |
 | Enforce budget guardrails           | [`scenarios/budget-limits/`](./scenarios/budget-limits/README.md) |
 | Run with a local sidecar runtime    | [`scenarios/sidecar-runtime/`](./scenarios/sidecar-runtime/README.md) |
+| Run the real SDK against a live core | [`scenarios/live-core-enforcement/`](./scenarios/live-core-enforcement/README.md) |
 | Read core concepts first            | [`docs/concepts.md`](./docs/concepts.md)           |
 | Choose the right example            | [`docs/choosing-an-example.md`](./docs/choosing-an-example.md) |
 
@@ -54,9 +55,13 @@ setup required, no API keys needed.
 | [`audit-trace`](./scenarios/audit-trace/) | Governed tool calls producing `allow`, `deny`, and `approval_required` audit records | `python scenarios/audit-trace/python/agent.py` |
 | [`budget-limits`](./scenarios/budget-limits/) | Budget guardrails blocking tool calls when a session cost ceiling is hit | `python scenarios/budget-limits/python/agent.py` |
 | [`sidecar-runtime`](./scenarios/sidecar-runtime/) | Running agents against a local Agent Assembly gateway via Docker Compose | `bash scenarios/sidecar-runtime/scripts/start.sh` |
+| [`live-core-enforcement`](./scenarios/live-core-enforcement/) | The **real** `agent_assembly` SDK governed end-to-end by a live `aa-runtime` + `aa-gateway` — a policy `deny` actually blocks a tool | `bash scenarios/live-core-enforcement/scripts/start.sh` |
 
-All three scenarios include Python and Node.js examples. They run **offline by
-default** — no live gateway needed unless you opt into the Docker Compose path.
+`audit-trace`, `budget-limits`, and `sidecar-runtime` include Python and Node.js
+examples and run **offline by default** — no live gateway needed unless you opt
+into the Docker Compose path. `live-core-enforcement` is the exception: it is
+Python-only and deliberately uses the **real** SDK + core over Docker, so it
+requires Docker and the published runtime/gateway images (see its README).
 
 ## Framework examples
 
@@ -226,6 +231,7 @@ agent-assembly-examples/
     audit-trace/                ← Governed tool calls + audit record inspection
     budget-limits/              ← Budget guardrails and cost ceiling enforcement
     sidecar-runtime/            ← Local Agent Assembly runtime via Docker Compose
+    live-core-enforcement/      ← Real SDK governed by a live aa-runtime + aa-gateway
   .github/
     workflows/
       README.md                 ← CI workflow documentation

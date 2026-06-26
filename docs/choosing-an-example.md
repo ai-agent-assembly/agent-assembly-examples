@@ -87,6 +87,13 @@ These examples demonstrate a specific Agent Assembly capability in a language-ag
 | How audit trail and trace are captured         | `scenarios/audit-trace/`                      |
 | How budget limits stop runaway spend           | `scenarios/budget-limits/`                    |
 | How the sidecar proxy intercepts without SDK   | `scenarios/sidecar-runtime/`                  |
+| How the real SDK is governed end-to-end by a live core³ | `scenarios/live-core-enforcement/`   |
+
+³ Unlike the other scenarios (which ship an offline SDK-shaped stand-in),
+`live-core-enforcement` imports the **real** `agent_assembly` SDK and runs it
+against a real `aa-runtime` + `aa-gateway` over Docker — a policy `deny` actually
+blocks the tool. It is Python-only and requires Docker (and a published gateway
+image); see its README.
 
 ---
 
