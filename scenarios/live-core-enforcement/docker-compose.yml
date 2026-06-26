@@ -1,51 +1,85 @@
 # Live-core enforcement — REAL Agent Assembly stack.
 #
-# This compose file brings up the genuine runtime + gateway (not a mock):
+# This compose file brings up the genuine three-piece stack (not a mock):
 #
-#   aa-runtime  — the published sidecar image, which bundles the gateway binary
-#                 and loads the section-based policy.yaml. It exposes the SDK IPC
-#                 socket at /tmp/aa-runtime-<agent_id>.sock on a shared volume.
+#   aa-gateway  — the governance gateway gRPC server. It is the policy
+#                 *authority*: it loads the section-based policy.yaml and serves
+#                 AgentLifecycleService.Register (agent registration) and
+#                 PolicyService.CheckAction (the per-tool allow/deny decision)
+#                 on :50051.
+#   aa-runtime  — the published sidecar image. It exposes the SDK IPC socket at
+#                 /tmp/aa-runtime-<agent_id>.sock on a shared volume and forwards
+#                 every policy check to the gateway (AA_GATEWAY_ENDPOINT).
 #   live-agent  — the Python example, built from python-agent/Dockerfile. It
-#                 installs the REAL `agent-assembly` SDK + native extension and
-#                 connects to the runtime over the shared socket volume.
+#                 installs the REAL `agent-assembly` SDK + native extension,
+#                 registers directly with the gateway, and runs governed tool
+#                 calls over the shared runtime socket.
 #
-# AA_AGENT_ID MUST be identical in both services — it determines the socket name.
+# AA_AGENT_ID MUST be identical in aa-runtime and live-agent — it determines the
+# socket name. The agent and the runtime both reach the gateway on :50051.
+#
+# IMPORTANT — gateway image dependency (AAASM-3791): the per-tool allow/deny
+# semantics of this scenario require a REAL aa-gateway (the runtime's own local
+# policy evaluation is action-type-based, not per-tool). The gateway is NOT
+# bundled in the aa-runtime image, and `ghcr.io/ai-agent-assembly/aa-gateway`
+# is not yet published. Until it is, `docker compose up` cannot pull the gateway
+# image and the stack cannot run end-to-end out of the box. See the scenario
+# README "Gateway image dependency" section.
 #
 # Start:  bash scripts/start.sh    (or: docker compose up --build)
 # Stop:   bash scripts/stop.sh     (or: docker compose down -v)
 
 services:
-  aa-runtime:
-    # The published runtime image bundles aa-gateway. Pin a tag for
+  aa-gateway:
+    # The governance gateway — the policy authority. Pin a tag for
     # reproducibility in real use; `latest` is fine for a local demo.
+    # NOTE: this image is not published yet (see the header note above).
+    image: ghcr.io/ai-agent-assembly/aa-gateway:latest
+    restart: unless-stopped
+    # legacy-grpc mode: load the section-based policy.yaml and serve gRPC.
+    command: ["--policy", "/etc/aa/policy.yaml", "--listen", "0.0.0.0:50051"]
+    environment:
+      RUST_LOG: "info"
+    volumes:
+      - ./policy.yaml:/etc/aa/policy.yaml:ro   # section-based policy, loaded by the gateway
+    ports:
+      - "50051:50051"                          # gRPC: Register + CheckAction
+
+  aa-runtime:
+    # The published runtime sidecar. It owns the SDK IPC socket and forwards
+    # policy checks to the gateway over gRPC. Pin a tag for reproducibility in
+    # real use; `latest` is fine for a local demo.
     image: ghcr.io/ai-agent-assembly/aa-runtime:latest
     restart: unless-stopped
+    depends_on:
+      - aa-gateway
     environment:
       AA_AGENT_ID: "live-core-demo-agent"
-      AA_POLICY: "/etc/aa/policy.yaml"      # section-based policy loaded by the gateway
-      # AA_METRICS_ADDR: "0.0.0.0:8080"     # default shown for reference
+      AA_GATEWAY_ENDPOINT: "http://aa-gateway:50051"   # forward CheckAction to the gateway
+      # AA_METRICS_ADDR: "0.0.0.0:8080"                # default shown for reference
     volumes:
       - aa-runtime-socket:/tmp              # IPC socket: /tmp/aa-runtime-live-core-demo-agent.sock
-      - ./policy.yaml:/etc/aa/policy.yaml:ro
     ports:
-      - "8080:8080"                         # health + metrics
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ready || exit 1"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-      start_period: 5s
+      - "8080:8080"                         # health + metrics (/ready, /health)
+    # No healthcheck: the runtime image is distroless (no /bin/sh, no wget), so
+    # an in-container CMD/CMD-SHELL probe cannot run. start.sh gates readiness
+    # from the host instead, by polling the published :8080/ready endpoint.
 
   live-agent:
     build:
       context: python-agent
     depends_on:
-      aa-runtime:
-        condition: service_healthy
+      - aa-gateway
+      - aa-runtime
     environment:
       AA_AGENT_ID: "live-core-demo-agent"   # MUST match aa-runtime
       AA_RUNTIME_SOCKET: "/tmp/aa-runtime-live-core-demo-agent.sock"
-      AA_GATEWAY_URL: "http://aa-runtime:7391"
+      # Agent registration is a direct SDK -> gateway gRPC call. The native SDK
+      # client reads AA_GATEWAY_ENDPOINT for that call (it defaults to
+      # 127.0.0.1:50051, which is wrong inside a container); AA_GATEWAY_URL is
+      # the Python SDK's own gateway handle. Both must point at the gateway.
+      AA_GATEWAY_URL: "http://aa-gateway:50051"
+      AA_GATEWAY_ENDPOINT: "http://aa-gateway:50051"
     volumes:
       - aa-runtime-socket:/tmp              # same socket the runtime created
 
