@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@agent-assembly/sdk": "0.0.1-beta.4",
+    "@agent-assembly/sdk": "0.0.1-rc.2",
     "ai": "^6.0.208",
     "zod": "^4.4.3"
   },
