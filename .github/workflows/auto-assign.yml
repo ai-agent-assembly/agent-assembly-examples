@@ -1,18 +1,18 @@
 name: Auto Assign
+# pozil/auto-assign-issue is issue-scoped; on pull_request it errors with
+# "Couldn't find issue info in current context". Restrict the trigger to issues
+# so this workflow no longer runs (and fails) on PRs.
 on:
   issues:
-    types: [opened]
-  pull_request:
     types: [opened]
 jobs:
   run:
     runs-on: ubuntu-latest
     permissions:
       issues: write
-      pull-requests: write
     steps:
     - name: 'Auto-assign issue'
-      uses: pozil/auto-assign-issue@v1
+      uses: pozil/auto-assign-issue@d11e715efc663fe323c3d8d4d3cbbfdddd539baf # v1
       with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           assignees: Chisanan232
