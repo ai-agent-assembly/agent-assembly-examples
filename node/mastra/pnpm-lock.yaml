@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@agent-assembly/sdk':
-        specifier: 0.0.1-rc.2
-        version: 0.0.1-rc.2(@mastra/core@1.49.0(@bufbuild/protobuf@2.12.0)(@grpc/grpc-js@1.14.4)(express@5.2.1)(zod@4.4.3))
+        specifier: 0.0.1-rc.3
+        version: 0.0.1-rc.3(@mastra/core@1.49.0(@bufbuild/protobuf@2.12.0)(@grpc/grpc-js@1.14.4)(express@5.2.1)(zod@4.4.3))
       '@mastra/core':
         specifier: ^1.49.0
         version: 1.49.0(@bufbuild/protobuf@2.12.0)(@grpc/grpc-js@1.14.4)(express@5.2.1)(zod@4.4.3)
@@ -51,32 +51,32 @@ packages:
       express:
         optional: true
 
-  '@agent-assembly/runtime-darwin-arm64@0.0.1-rc.2':
-    resolution: {integrity: sha512-YKXjPM/c5mwMWKwvntmRe9uML451s2en/3Fjjt6iyAAc6FUdnsw4TNXBtqM9gVVuFvg/h99swCnXALlhIk+Fzw==}
+  '@agent-assembly/runtime-darwin-arm64@0.0.1-rc.3':
+    resolution: {integrity: sha512-oanMHN0qIdm4ue5Pl0MLTYz3gdkK35atSirKpxonBnl6pE/GkJgIY2J8343z+uGszkahVvjbalWkFponTfVJvw==}
     cpu: [arm64]
     os: [darwin]
     hasBin: true
 
-  '@agent-assembly/runtime-darwin-x64@0.0.1-rc.2':
-    resolution: {integrity: sha512-cSHG0SPTdPMLwrD+FoErk/LRFuNdY2bq/+/5VafjXvVWL7haF1xZxvc2myXV8DUKFK/o8VFY2d3PQ0X9UtOKFg==}
+  '@agent-assembly/runtime-darwin-x64@0.0.1-rc.3':
+    resolution: {integrity: sha512-3ZdvJk0zcyc62Mf55TOswIJRxFheBCltHk+Tsuq0F13Umu8USAKBwZWWbIgRhy5X2rFut4Km46Deia3CbSFGmg==}
     cpu: [x64]
     os: [darwin]
     hasBin: true
 
-  '@agent-assembly/runtime-linux-arm64@0.0.1-rc.2':
-    resolution: {integrity: sha512-Lj3kuPrDe09FDJsWjEbUpP9NJXJPM/kvasakTPRcguJ8uDGJxJSexQfuM4efk5YDhYMPdCouC7T9r9Sr/EsVOw==}
+  '@agent-assembly/runtime-linux-arm64@0.0.1-rc.3':
+    resolution: {integrity: sha512-wH67kDkNbcHFcglMiNF92Cj4lv1zR67CeqU6mj8iNoaXy34lC1uRgFFARoy0CJgjrt1R5EjSpON3y2+G7srC/Q==}
     cpu: [arm64]
     os: [linux]
     hasBin: true
 
-  '@agent-assembly/runtime-linux-x64@0.0.1-rc.2':
-    resolution: {integrity: sha512-eqq+lIYzTWMtD3Ln6cVofyi57AzP5+ApJRkYUVYUN2bVlTiwbbfHMC+Nku/kg6r34EuAdKJfn0XxPiI6OxlVtA==}
+  '@agent-assembly/runtime-linux-x64@0.0.1-rc.3':
+    resolution: {integrity: sha512-bhGx79FrDAJ5YUNiYBFJ+MAudz79ltWSUXJte0d1BJSjy5iaRJgDvdVlAk8ILFqLTaVTBXT1lT33gubG3y1syw==}
     cpu: [x64]
     os: [linux]
     hasBin: true
 
-  '@agent-assembly/sdk@0.0.1-rc.2':
-    resolution: {integrity: sha512-xbShlADsr8Zd5wyWlygNd82TRdvuRjKfQKlT0Kqr3qqrSYl/Rt2TbU9RXJzTk952/Y3wQsdcr/tV7kjljI0qeQ==}
+  '@agent-assembly/sdk@0.0.1-rc.3':
+    resolution: {integrity: sha512-WLSXX/EU5GXG+nROOc+DGLr9SP7BxH1oxr13fxSUFfdv35jI9nvm8Uj9tETCkx2dMnO8qlOeORHMKFfsXnh/8g==}
     engines: {node: '>=18.18.0', pnpm: '>=10'}
     peerDependencies:
       '@langchain/core': '>=0.3.0'
@@ -1676,27 +1676,27 @@ snapshots:
       '@grpc/grpc-js': 1.14.4
       express: 5.2.1
 
-  '@agent-assembly/runtime-darwin-arm64@0.0.1-rc.2':
+  '@agent-assembly/runtime-darwin-arm64@0.0.1-rc.3':
     optional: true
 
-  '@agent-assembly/runtime-darwin-x64@0.0.1-rc.2':
+  '@agent-assembly/runtime-darwin-x64@0.0.1-rc.3':
     optional: true
 
-  '@agent-assembly/runtime-linux-arm64@0.0.1-rc.2':
+  '@agent-assembly/runtime-linux-arm64@0.0.1-rc.3':
     optional: true
 
-  '@agent-assembly/runtime-linux-x64@0.0.1-rc.2':
+  '@agent-assembly/runtime-linux-x64@0.0.1-rc.3':
     optional: true
 
-  '@agent-assembly/sdk@0.0.1-rc.2(@mastra/core@1.49.0(@bufbuild/protobuf@2.12.0)(@grpc/grpc-js@1.14.4)(express@5.2.1)(zod@4.4.3))':
+  '@agent-assembly/sdk@0.0.1-rc.3(@mastra/core@1.49.0(@bufbuild/protobuf@2.12.0)(@grpc/grpc-js@1.14.4)(express@5.2.1)(zod@4.4.3))':
     dependencies:
       '@bufbuild/protobuf': 2.12.0
       '@grpc/grpc-js': 1.14.4
     optionalDependencies:
-      '@agent-assembly/runtime-darwin-arm64': 0.0.1-rc.2
-      '@agent-assembly/runtime-darwin-x64': 0.0.1-rc.2
-      '@agent-assembly/runtime-linux-arm64': 0.0.1-rc.2
-      '@agent-assembly/runtime-linux-x64': 0.0.1-rc.2
+      '@agent-assembly/runtime-darwin-arm64': 0.0.1-rc.3
+      '@agent-assembly/runtime-darwin-x64': 0.0.1-rc.3
+      '@agent-assembly/runtime-linux-arm64': 0.0.1-rc.3
+      '@agent-assembly/runtime-linux-x64': 0.0.1-rc.3
       '@mastra/core': 1.49.0(@bufbuild/protobuf@2.12.0)(@grpc/grpc-js@1.14.4)(express@5.2.1)(zod@4.4.3)
 
   '@ai-sdk/provider-utils@2.2.8(zod@4.4.3)':
@@ -2396,9 +2396,9 @@ snapshots:
     dependencies:
       reusify: 1.1.0
 
-  fdir@6.5.0(picomatch@4.0.4):
+  fdir@6.5.0(picomatch@4.0.5):
     optionalDependencies:
-      picomatch: 4.0.4
+      picomatch: 4.0.5
 
   figures@6.1.0:
     dependencies:
@@ -3155,8 +3155,8 @@ snapshots:
 
   tinyglobby@0.2.17:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
+      fdir: 6.5.0(picomatch@4.0.5)
+      picomatch: 4.0.5
 
   tinyrainbow@3.1.0: {}
 
