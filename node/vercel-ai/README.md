@@ -12,7 +12,7 @@ A TypeScript example showing how to govern [Vercel AI SDK](https://sdk.vercel.ai
 
 ## Why `withAssembly` instead of a framework hook
 
-The published `@agent-assembly/sdk` alpha exposes governance through the public
+The published `@agent-assembly/sdk` release candidate exposes governance through the public
 `withAssembly(tools, { gatewayClient })` API. We wrap each Vercel AI SDK tool's
 `execute` with the local policy gateway client, so the governance path is exercised
 deterministically in CI with no gateway running.

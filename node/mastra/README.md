@@ -12,7 +12,7 @@ A TypeScript example showing how to govern [Mastra](https://mastra.ai) tools wit
 
 ## Why `withAssembly` instead of a framework hook
 
-The published `@agent-assembly/sdk` alpha exposes governance through the public
+The published `@agent-assembly/sdk` release candidate exposes governance through the public
 `withAssembly(tools, { gatewayClient })` API. We define real Mastra tools with
 `createTool` and govern their `execute` through `withAssembly` + a local policy
 gateway client, so the governance path runs deterministically in CI with no
