@@ -6,6 +6,8 @@ requires-python = ">=3.12"
 dependencies = [
     "agent-assembly==0.0.1rc3",
     "openai-agents>=0.17.5",
+    # Constrain transitive dep to fix GHSA-4xgf-cpjx-pc3j (symlink file read vulnerability)
+    "pydantic-settings>=2.14.2",
 ]
 
 [project.optional-dependencies]

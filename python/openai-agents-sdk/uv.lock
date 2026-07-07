@@ -4,7 +4,7 @@ requires-python = ">=3.12"
 
 [[package]]
 name = "agent-assembly"
-version = "0.0.1b5"
+version = "0.0.1rc3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "grpcio" },
@@ -13,12 +13,12 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f5/0e/22a30ad1e90afefbfcd79da6a947a132daf74f643639fd7e35c8ad597f48/agent_assembly-0.0.1b5.tar.gz", hash = "sha256:cb33d7a8a0c53002fcc9e7aab1cd46ecc984ef6ea759adb533dfa08187029545", size = 98935, upload-time = "2026-06-25T07:18:41.021Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/21/b4/011d51322a34ceec5bda83408191ca47748c3b8fa122733dcace38ec03db/agent_assembly-0.0.1rc3.tar.gz", hash = "sha256:dcad78135cf05ab9e415afdc42d21215fd11dc3df62bcff43818376bdfeed983", size = 104197, upload-time = "2026-07-04T00:42:16.565Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/57/0c/f49c7cc8765a862e934f5ecedbc6ee39f6c0eaf71cd12778747f7a2ac86e/agent_assembly-0.0.1b5-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:97437ee5dc221092f816d2dfaea12d1c023dc5f44b343c9926fb88ec7ff02a53", size = 17835865, upload-time = "2026-06-25T07:18:31.916Z" },
-    { url = "https://files.pythonhosted.org/packages/9c/86/c65472c8a92a47f134eb97ffecd4c164f34a545fa094c97b77823cdd590f/agent_assembly-0.0.1b5-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:b5ce7bf2e29b5298e6133d39b009b282047cc92bb6b47f0cef2e26d9d616aceb", size = 15903009, upload-time = "2026-06-25T07:18:34.388Z" },
-    { url = "https://files.pythonhosted.org/packages/f4/01/364cfe2f403b59ea81f72c461e94150e88381444e18f3166062eeeecfd6e/agent_assembly-0.0.1b5-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6c2f93d12d433458034d41ba6a63377d52cc7076607d3ec12157309455d7486f", size = 17360120, upload-time = "2026-06-25T07:18:36.607Z" },
-    { url = "https://files.pythonhosted.org/packages/0c/41/e10464da3a4cbb3c7a621ce5b762f75a97321d4946961e7cfbb9e605e298/agent_assembly-0.0.1b5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:23c161de58912ab50afadb9d77b7823e840cecf08f1d7bee882612c5fa0db75c", size = 18754354, upload-time = "2026-06-25T07:18:38.761Z" },
+    { url = "https://files.pythonhosted.org/packages/7a/d3/1383bec1bd0a6fb0bcbb2cc0cd4d0555ccfcb775a9ed1f0c9fc9534fe08b/agent_assembly-0.0.1rc3-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:34a5e00681dcc58bbbf812342149d28725977c846bda0aa0102d1ac3d97e5b77", size = 19629009, upload-time = "2026-07-04T00:42:05.671Z" },
+    { url = "https://files.pythonhosted.org/packages/d3/67/f9778d84fad1c570c7e6f73f6b9eb42271dabf7ba3339dcc23b687d22a53/agent_assembly-0.0.1rc3-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:70a3e8da1b66df8445407ee7a97412303569fdf273a0b0953973ce1efba20fa2", size = 17607845, upload-time = "2026-07-04T00:42:08.863Z" },
+    { url = "https://files.pythonhosted.org/packages/c5/e7/209baedee5acb75187dbfdb8f8d3798e9cad547bd62ae61fb4c8efc5b442/agent_assembly-0.0.1rc3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e8787cb9eb5d6648a8762236f0c9b345af8d8a80893825f2c08a719f2a217ad8", size = 19024550, upload-time = "2026-07-04T00:42:11.495Z" },
+    { url = "https://files.pythonhosted.org/packages/01/8d/5f0da9d58bcb8fb68a237205cd06bb2449ad531bec796a93b87e26e5a80a/agent_assembly-0.0.1rc3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7c9941e0566efb31d46fdebe4e8556c40415532c4aa0be11305cdbdeda8beb65", size = 20538409, upload-time = "2026-07-04T00:42:14.424Z" },
 ]
 
 [[package]]
@@ -554,6 +554,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "agent-assembly" },
     { name = "openai-agents" },
+    { name = "pydantic-settings" },
 ]
 
 [package.optional-dependencies]
@@ -565,8 +566,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agent-assembly", specifier = ">=0.0.1b5" },
+    { name = "agent-assembly", specifier = "==0.0.1rc3" },
     { name = "openai-agents", specifier = ">=0.17.5" },
+    { name = "pydantic-settings", specifier = ">=2.14.2" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23.0" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
@@ -707,16 +709,16 @@ wheels = [
 
 [[package]]
 name = "pydantic-settings"
-version = "2.14.1"
+version = "2.14.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/07/60/1d1e59c9c90d54591469ada7d268251f71c24bdb765f1a8a832cee8c6653/pydantic_settings-2.14.1.tar.gz", hash = "sha256:e874d3bec7e787b0c9958277956ed9b4dd5de6a80e162188fdaff7c5e26fd5fa", size = 235551, upload-time = "2026-05-08T13:40:06.542Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5c/b5/8f48e906c3e0205276e8bd8cb7512217a87b2685304d64be27cad5b3019f/pydantic_settings-2.14.2.tar.gz", hash = "sha256:c19dd64b19097f1de80184f0cc7b0272a13ae6e170cbf240a3e27e381ed14a5f", size = 237700, upload-time = "2026-06-19T13:44:56.324Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ae/8d/f1af3832f5e6eb13ba94ee809e72b8ecb5eef226d27ee0bef7d963d943c7/pydantic_settings-2.14.1-py3-none-any.whl", hash = "sha256:6e3c7edfd8277687cdc598f56e5cff0e9bfff0910a3749deaa8d4401c3a2b9de", size = 60964, upload-time = "2026-05-08T13:40:04.958Z" },
+    { url = "https://files.pythonhosted.org/packages/77/c1/6e422f34e569cf8e18df68d1939c81c099d2b61e4f7d9621c8a77560799c/pydantic_settings-2.14.2-py3-none-any.whl", hash = "sha256:a20c97b37910b6550d5ea50fbcc2d4187defe58cd57070b73863d069419c9440", size = 61715, upload-time = "2026-06-19T13:44:55.02Z" },
 ]
 
 [[package]]
