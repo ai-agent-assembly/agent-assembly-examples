@@ -19,7 +19,7 @@ Demonstrates how to add [Agent Assembly](https://github.com/ai-agent-assembly/ag
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1b2 |
+| Agent Assembly Python SDK | >= 0.0.1rc3 |
 
 No API key, no gateway, and no AI framework are required.
 

@@ -24,7 +24,7 @@ This is not a mock: the tools are real `smolagents.Tool` subclasses and the gove
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1b2 |
+| Agent Assembly Python SDK | >= 0.0.1rc3 |
 | smolagents | >= 1.0, < 2.0 |
 
 No running Agent Assembly gateway and no model/API credentials are required for the offline demo.

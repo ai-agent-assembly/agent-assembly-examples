@@ -23,7 +23,7 @@ In ADK 1.x, concrete tools (`FunctionTool` and custom `BaseTool` subclasses) ove
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1b2 |
+| Agent Assembly Python SDK | >= 0.0.1rc3 |
 
 No running Agent Assembly gateway and no Google Cloud credentials are required for the offline demo.
 
