@@ -1,5 +1,5 @@
 {
-  "name": "@agent-assembly-examples/policy-enforcement",
+  "name": "@examples/policy-enforcement",
   "version": "0.0.0",
   "private": true,
   "description": "Agent Assembly policy enforcement scenario — TypeScript implementation",
@@ -18,7 +18,7 @@
     "js-yaml": "^5.2.1"
   },
   "devDependencies": {
-    "@types/node": "^26.1.0",
+    "@types/node": "^26.1.1",
     "tsx": "4.23.0",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10"
