@@ -70,7 +70,7 @@ All Node.js examples use the `@agent-assembly/sdk` npm package.
 | Govern a LangChainGo agent's tool calls        | `go/langchaingo/`                             |
 | Integrate the Agent Assembly CLI runtime       | `go/cli-runtime-integration/`                 |
 
-All Go examples use the `github.com/agent-assembly/go-sdk` module.
+All Go examples use the `github.com/ai-agent-assembly/go-sdk` module.
 
 ---
 
