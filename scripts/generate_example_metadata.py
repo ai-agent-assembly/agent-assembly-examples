@@ -178,6 +178,61 @@ def rewrite_python_manifest(path: Path, sdk: PythonSdk) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Node manifest rewrites
+# ---------------------------------------------------------------------------
+
+
+# Match a "@agent-assembly/sdk": "<version>" line in package.json. Preserves
+# leading indent and the optional trailing comma so we never disturb the
+# surrounding key order or JSON validity.
+_NODE_PIN_RE = re.compile(
+    r'''^(?P<indent>\s*)"@agent-assembly/sdk"\s*:\s*"[^"]*"(?P<tail>,?\s*)$''',
+    re.MULTILINE,
+)
+
+
+def rewrite_node_manifest(path: Path, sdk: NodeSdk) -> bool:
+    text = path.read_text(encoding="utf-8")
+
+    def _sub(match: re.Match[str]) -> str:
+        indent = match.group("indent")
+        tail = match.group("tail")
+        return f'{indent}"{sdk.package}": "{sdk.version}"{tail}'
+
+    new_text = _NODE_PIN_RE.sub(_sub, text)
+    return _write_if_changed(path, new_text)
+
+
+# ---------------------------------------------------------------------------
+# Go manifest rewrites
+# ---------------------------------------------------------------------------
+
+
+# Match a go.mod line of the form:
+#   require github.com/ai-agent-assembly/go-sdk v0.0.1-rc.3
+# or, inside a require ( ... ) block:
+#   \tgithub.com/ai-agent-assembly/go-sdk v0.0.1-rc.3
+# The regex captures the prefix (indent + optional "require ") so we preserve
+# whichever form the surrounding file uses.
+_GO_PIN_RE = re.compile(
+    r'''^(?P<prefix>\s*(?:require\s+)?)github\.com/ai-agent-assembly/go-sdk\s+\S+(?P<tail>\s*(?://.*)?)$''',
+    re.MULTILINE,
+)
+
+
+def rewrite_go_manifest(path: Path, sdk: GoSdk) -> bool:
+    text = path.read_text(encoding="utf-8")
+
+    def _sub(match: re.Match[str]) -> str:
+        prefix = match.group("prefix")
+        tail = match.group("tail")
+        return f"{prefix}{sdk.module} {sdk.version}{tail}"
+
+    new_text = _GO_PIN_RE.sub(_sub, text)
+    return _write_if_changed(path, new_text)
+
+
+# ---------------------------------------------------------------------------
 # README bounded-block rewrites
 # ---------------------------------------------------------------------------
 
@@ -314,6 +369,41 @@ def _python_subprojects(repo_root: Path) -> list[Path]:
     return out
 
 
+def _node_subprojects(repo_root: Path) -> list[Path]:
+    """Return every directory that holds a node `package.json` that pins the SDK.
+
+    Scenario node packages that do not depend on ``@agent-assembly/sdk`` are
+    intentionally excluded: they have no manifest line to rewrite and no
+    SDK version literal to advertise in their README.
+    """
+
+    out: list[Path] = []
+    node_dir = repo_root / "node"
+    if node_dir.is_dir():
+        for sub in sorted(node_dir.iterdir()):
+            manifest = sub / "package.json"
+            if manifest.is_file() and "@agent-assembly/sdk" in manifest.read_text(
+                encoding="utf-8"
+            ):
+                out.append(sub)
+    return out
+
+
+def _go_subprojects(repo_root: Path) -> list[Path]:
+    """Return every directory that holds a Go module pinning the go-sdk."""
+
+    out: list[Path] = []
+    go_dir = repo_root / "go"
+    if go_dir.is_dir():
+        for sub in sorted(go_dir.iterdir()):
+            manifest = sub / "go.mod"
+            if manifest.is_file() and "github.com/ai-agent-assembly/go-sdk" in (
+                manifest.read_text(encoding="utf-8")
+            ):
+                out.append(sub)
+    return out
+
+
 def process_python(repo_root: Path, versions: SdkVersions) -> list[Path]:
     """Rewrite all in-scope python manifests and READMEs.
 
@@ -328,6 +418,47 @@ def process_python(repo_root: Path, versions: SdkVersions) -> list[Path]:
         readme = subproject / "README.md"
         if readme.is_file() and rewrite_python_readme(readme, versions.python):
             changed.append(readme)
+    return changed
+
+
+def process_node(repo_root: Path, versions: SdkVersions) -> list[Path]:
+    """Rewrite all in-scope node manifests and READMEs.
+
+    Returns the list of files that were rewritten.
+    """
+
+    changed: list[Path] = []
+    for subproject in _node_subprojects(repo_root):
+        manifest = subproject / "package.json"
+        if rewrite_node_manifest(manifest, versions.node):
+            changed.append(manifest)
+        readme = subproject / "README.md"
+        if readme.is_file() and rewrite_node_readme(readme, versions.node):
+            changed.append(readme)
+    return changed
+
+
+def process_go(repo_root: Path, versions: SdkVersions) -> list[Path]:
+    """Rewrite all in-scope go manifests and READMEs.
+
+    Returns the list of files that were rewritten. Also rewrites the
+    aggregate ``go/README.md`` if it exists, so the top-level Go landing
+    page advertises the same SDK version as the per-example READMEs.
+    """
+
+    changed: list[Path] = []
+    for subproject in _go_subprojects(repo_root):
+        manifest = subproject / "go.mod"
+        if rewrite_go_manifest(manifest, versions.go):
+            changed.append(manifest)
+        readme = subproject / "README.md"
+        if readme.is_file() and rewrite_go_readme(readme, versions.go):
+            changed.append(readme)
+    top_level_readme = repo_root / "go" / "README.md"
+    if top_level_readme.is_file() and rewrite_go_readme(
+        top_level_readme, versions.go
+    ):
+        changed.append(top_level_readme)
     return changed
 
 
@@ -354,6 +485,8 @@ def main(argv: list[str] | None = None) -> int:
     versions = load_sdk_versions(args.repo_root)
     changed: list[Path] = []
     changed.extend(process_python(args.repo_root, versions))
+    changed.extend(process_node(args.repo_root, versions))
+    changed.extend(process_go(args.repo_root, versions))
 
     if changed:
         print(f"Rewrote {len(changed)} file(s):")
