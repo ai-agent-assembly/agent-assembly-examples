@@ -16,7 +16,7 @@ pip install agent-assembly==0.0.1rc3
 ```
 <!-- END GENERATED: sdk-install -->
 
-Demonstrates how [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly-examples)
+Demonstrates how [Agent Assembly](https://github.com/ai-agent-assembly/examples)
 governs a **multi-agent** [CrewAI](https://docs.crewai.com/)-style research crew.
 Three agents collaborate, delegate to one another, and every governed tool call
 is attributed to the acting agent with the full delegation chain captured on the

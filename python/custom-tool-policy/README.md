@@ -18,7 +18,7 @@ pip install agent-assembly==0.0.1rc3
 
 The simplest Agent Assembly integration — no AI framework required.
 
-Demonstrates how to add [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly-examples) governance to plain Python functions using the minimal `governed()` wrapper helper.
+Demonstrates how to add [Agent Assembly](https://github.com/ai-agent-assembly/examples) governance to plain Python functions using the minimal `governed()` wrapper helper.
 
 ## What this example demonstrates
 

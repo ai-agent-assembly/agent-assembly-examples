@@ -14,7 +14,7 @@ Agent Assembly is designed to be deployed incrementally. Each layer adds coverag
 
 ### 1. SDK layer (in-process)
 
-The language SDKs — `agent-assembly` for Python, `@agent-assembly/sdk` for Node.js, and `github.com/agent-assembly/go-sdk` for Go — wrap your agent's tool-calling code directly. The SDK calls into a thin Rust shim that:
+The language SDKs — `agent-assembly` for Python, `@agent-assembly/sdk` for Node.js, and `github.com/ai-agent-assembly/go-sdk` for Go — wrap your agent's tool-calling code directly. The SDK calls into a thin Rust shim that:
 
 - Emits a governance event to the gateway before the tool executes.
 - Applies an allow/deny decision returned by the gateway.

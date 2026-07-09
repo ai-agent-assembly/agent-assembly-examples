@@ -16,7 +16,7 @@ pip install agent-assembly==0.0.1rc3
 ```
 <!-- END GENERATED: sdk-install -->
 
-Demonstrates how to integrate [Agent Assembly](https://github.com/ai-agent-assembly/agent-assembly-examples) with [Smolagents](https://github.com/huggingface/smolagents) (Hugging Face) to enforce governance policy on tool calls **before** they execute.
+Demonstrates how to integrate [Agent Assembly](https://github.com/ai-agent-assembly/examples) with [Smolagents](https://github.com/huggingface/smolagents) (Hugging Face) to enforce governance policy on tool calls **before** they execute.
 
 ## What this example demonstrates
 

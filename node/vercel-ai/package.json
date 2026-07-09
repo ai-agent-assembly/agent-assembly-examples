@@ -15,11 +15,11 @@
   },
   "dependencies": {
     "@agent-assembly/sdk": "0.0.1-rc.3",
-    "ai": "^7.0.17",
+    "ai": "^7.0.18",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^26.1.0",
+    "@types/node": "^26.1.1",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
