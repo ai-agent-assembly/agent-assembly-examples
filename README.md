@@ -15,7 +15,7 @@ workflows — then go deeper in the docs.
 
 | Resource | Link |
 |---|---|
-| Documentation hub | <https://ai-agent-assembly.github.io/docs/> |
+| Documentation hub | <https://docs.agent-assembly.com/> |
 | Core runtime & CLI | [agent-assembly](https://github.com/ai-agent-assembly/agent-assembly) |
 | Python SDK | [python-sdk](https://github.com/ai-agent-assembly/python-sdk) |
 | Node.js / TypeScript SDK | [node-sdk](https://github.com/ai-agent-assembly/node-sdk) |
