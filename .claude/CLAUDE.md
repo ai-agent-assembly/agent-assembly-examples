@@ -123,6 +123,48 @@ Mirror these locally before opening a PR; don't add a `live`-extra install to CI
 - **The Protocol Specification stays in the `agent-assembly` monorepo** — this repo
   is examples only; don't reproduce spec or policy semantics here.
 
+## Verification policy — a diagnosed defect must stay red until it is *fixed*
+
+These examples double as verification: the `--mock`/offline lanes prove the
+governance wiring, and the `live`/real-path lanes prove it against a real
+gateway/SDK. When a live/real-path run (or a verification report) diagnoses a
+concrete defect — a real allow/deny/approval/budget outcome the product gets
+wrong — the tempting shortcut is to make the example pass by scripting the mock
+trajectory around the defect, or by `skip`/`xfail`-ing the live assertion. That
+is the failure mode this policy exists to stop.
+
+**The rule.** When a real defect is found, one of these must be true — enforced
+by convention, not individual diligence:
+
+1. **A tracking ticket is opened and stays open until the *defect* is fixed** —
+   never closed by adjusting the mock trajectory or the example to stop showing
+   it. Only a real fix in the product repo closes it.
+2. **If the live assertion is converted to an interim marker**, it must
+   reference the open ticket by key (in the `reason=`/adjacent comment) and use
+   `xfail(strict=True)` where it is expected to raise, so the marker xpasses
+   loudly and forces its own removal once the fix lands. A bare `skip`/
+   `xfail(strict=False)` with no ticket, or a mock trajectory quietly rewritten
+   to route around a real defect, is a policy violation.
+
+**Counterpart forcing function.** This repo has no marker-audit tool of its own;
+its forcing function is the **live/real-path lanes** — a `--mock`-only pass must
+never be treated as sufficient evidence a governance behavior works, precisely
+because a mock trajectory can be scripted to hide a real defect. The canonical
+marker-audit tool lives in the `e2e-public` harness (`aasm-verify markers`),
+which enumerates `skip`/`xfail`/`rc_pending` markers and cross-refs their ticket
+against Jira status; mirror that discipline here by keeping every deferred live
+assertion tied to an open ticket.
+
+**Case study — why this rule exists.** In `e2e-public`, June 2026,
+`AAASM-2985-sdk-transport-investigation.md` correctly diagnosed that the SDK's
+gRPC registration transport had no matching endpoint in the documented local
+deployment. AAASM-2985 was marked **Done** and its follow-ons AAASM-2989/3000
+re-pointed the harness behind an `xfail`/`skip` — closing the *finding* without
+fixing the *defect*. Six months later the org re-discovered the same
+production-impacting gap from scratch, at higher cost, as **AAASM-4447/4449**. A
+mock-green example or a marker-masked live assertion can hide exactly this shape
+of defect; keep the real-path lane honest so it can't.
+
 ## Documentation conventions — document the WHY, not the WHAT
 
 Comments and docstrings exist to capture intent the code cannot: rationale,
