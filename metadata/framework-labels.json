@@ -1,0 +1,35 @@
+{
+  "_comment": "Display metadata for the per-framework quick-start snippet tabs (AAASM-4511). Curated input to scripts/extract_snippets.py: maps an example directory (framework_id) to its human tab label and validation status. Optional per entry — a missing example falls back to a label derived from its directory name and status 'validated'. status ∈ {validated, experimental}.",
+  "python": {
+    "agno-tool-policy": { "label": "Agno" },
+    "autogen-tool-policy": { "label": "AutoGen" },
+    "crewai-research-crew": { "label": "CrewAI" },
+    "custom-tool-policy": { "label": "Custom (no framework)" },
+    "google-adk": { "label": "Google ADK" },
+    "haystack-tool-policy": { "label": "Haystack" },
+    "langchain-basic-agent": { "label": "LangChain" },
+    "langchain-research-agent": { "label": "LangChain (Research Agent)" },
+    "langgraph": { "label": "LangGraph" },
+    "llamaindex-tool-policy": { "label": "LlamaIndex" },
+    "microsoft-agent-framework-tool-policy": { "label": "Microsoft Agent Framework" },
+    "openai-agents-sdk": { "label": "OpenAI Agents SDK" },
+    "pydantic-ai": { "label": "Pydantic AI" },
+    "semantic-kernel-tool-policy": { "label": "Semantic Kernel" },
+    "smolagents-tool-policy": { "label": "smolagents" },
+    "strands-agents-tool-policy": { "label": "Strands Agents" }
+  },
+  "node": {
+    "custom-tool-policy": { "label": "Custom (no framework)" },
+    "langchain-js-basic-agent": { "label": "LangChain.js" },
+    "langgraph-js": { "label": "LangGraph.js" },
+    "mastra": { "label": "Mastra" },
+    "openai-node-tool-policy": { "label": "OpenAI (Node)" },
+    "vercel-ai": { "label": "Vercel AI SDK" }
+  },
+  "go": {
+    "basic-agent": { "label": "Plain SDK" },
+    "cli-runtime-integration": { "label": "CLI Runtime (sidecar)" },
+    "langchaingo": { "label": "LangChainGo" },
+    "tool-policy": { "label": "Tool Policy (plain)" }
+  }
+}
