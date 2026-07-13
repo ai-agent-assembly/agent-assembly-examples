@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	// region: quickstart
 	ctx := assembly.WithAgentID(context.Background(), "tool-policy-demo")
 
 	fmt.Printf("[policy] client loaded: read-file=ALLOW, delete-file=DENY\n\n")
@@ -18,6 +19,7 @@ func main() {
 		[]assembly.Tool{&readFileTool{}, &deleteFileTool{}},
 		client,
 	)
+	// endregion
 
 	runTool(ctx, tools[0], "config.yaml")
 	fmt.Println()
