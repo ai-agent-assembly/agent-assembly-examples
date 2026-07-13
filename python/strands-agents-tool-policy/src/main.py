@@ -67,6 +67,7 @@ def main() -> None:
 
     print(f"Initializing Agent Assembly (gateway: {gateway_url}, sdk-only mode)...")
 
+    # region: quickstart
     with init_assembly(
         gateway_url=gateway_url,
         api_key=api_key,
@@ -79,6 +80,7 @@ def main() -> None:
         print()
 
         policy = LocalPolicyEngine()
+        # endregion
 
         print("Policy rules (local simulation of gateway policy):")
         print("  DENY   — execute_sql, run_shell_command  (arbitrary execution)")
