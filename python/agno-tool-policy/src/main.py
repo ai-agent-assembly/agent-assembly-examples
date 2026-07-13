@@ -71,6 +71,7 @@ def main() -> None:
 
     print(f"Initializing Agent Assembly (gateway: {gateway_url}, sdk-only mode)...")
 
+    # region: quickstart
     with init_assembly(
         gateway_url=gateway_url,
         api_key=api_key,
@@ -100,6 +101,7 @@ def main() -> None:
         assert patch.apply(), (
             "Agno governance hook did not install — is agno importable?"
         )
+        # endregion
 
         print("Agno governance hook installed on FunctionCall.execute.")
         print("Tools governed: get_weather, summarize_docs, execute_sql")
