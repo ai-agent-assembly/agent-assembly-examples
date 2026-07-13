@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.12"
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'win32'",
@@ -47,7 +47,7 @@ wheels = [
 
 [[package]]
 name = "agent-assembly"
-version = "0.0.1rc3"
+version = "0.0.1rc4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "grpcio" },
@@ -56,12 +56,20 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/21/b4/011d51322a34ceec5bda83408191ca47748c3b8fa122733dcace38ec03db/agent_assembly-0.0.1rc3.tar.gz", hash = "sha256:dcad78135cf05ab9e415afdc42d21215fd11dc3df62bcff43818376bdfeed983", size = 104197, upload-time = "2026-07-04T00:42:16.565Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/db/65/0aebe26e01ecb33047f5227d1f45714b6868effcfda17ccdebab30edb57c/agent_assembly-0.0.1rc4.tar.gz", hash = "sha256:d82440cc267245c395afe47c0ac7119457e8e125a240cde60d8b27e7d4cc8685", size = 108359, upload-time = "2026-07-13T03:05:16.638Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7a/d3/1383bec1bd0a6fb0bcbb2cc0cd4d0555ccfcb775a9ed1f0c9fc9534fe08b/agent_assembly-0.0.1rc3-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:34a5e00681dcc58bbbf812342149d28725977c846bda0aa0102d1ac3d97e5b77", size = 19629009, upload-time = "2026-07-04T00:42:05.671Z" },
-    { url = "https://files.pythonhosted.org/packages/d3/67/f9778d84fad1c570c7e6f73f6b9eb42271dabf7ba3339dcc23b687d22a53/agent_assembly-0.0.1rc3-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:70a3e8da1b66df8445407ee7a97412303569fdf273a0b0953973ce1efba20fa2", size = 17607845, upload-time = "2026-07-04T00:42:08.863Z" },
-    { url = "https://files.pythonhosted.org/packages/c5/e7/209baedee5acb75187dbfdb8f8d3798e9cad547bd62ae61fb4c8efc5b442/agent_assembly-0.0.1rc3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e8787cb9eb5d6648a8762236f0c9b345af8d8a80893825f2c08a719f2a217ad8", size = 19024550, upload-time = "2026-07-04T00:42:11.495Z" },
-    { url = "https://files.pythonhosted.org/packages/01/8d/5f0da9d58bcb8fb68a237205cd06bb2449ad531bec796a93b87e26e5a80a/agent_assembly-0.0.1rc3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7c9941e0566efb31d46fdebe4e8556c40415532c4aa0be11305cdbdeda8beb65", size = 20538409, upload-time = "2026-07-04T00:42:14.424Z" },
+    { url = "https://files.pythonhosted.org/packages/26/53/c16e07a498300219e2ae82100d2df403de9ee35b6675432c8135aad20b72/agent_assembly-0.0.1rc4-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:8c4f5706f42324a5404edc893854ad4a6306075016eb1f1023dc3d207fce7022", size = 23980322, upload-time = "2026-07-13T03:04:40.794Z" },
+    { url = "https://files.pythonhosted.org/packages/48/1c/3f70aa2edc40371225d4ce2449241ff39df49f75c08ef4056ded66ba0029/agent_assembly-0.0.1rc4-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:fbb8bf36d192edda42d409752a4cec9fe39b17c5b589517c65ae193a9901821c", size = 22262965, upload-time = "2026-07-13T03:04:43.844Z" },
+    { url = "https://files.pythonhosted.org/packages/74/cb/88fcb6beecf9460a76535f21dfecbbe502c99cff47100eee580032fc6e39/agent_assembly-0.0.1rc4-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6fdff6b9fb32c3a7eb598e441501a7ad4cee742ebb4b879ca09dad6fe3291230", size = 22692499, upload-time = "2026-07-13T03:04:46.651Z" },
+    { url = "https://files.pythonhosted.org/packages/15/ee/9f1690ede35fce6d790baf097b54dad082009ef990ee69138b7caef8ae0a/agent_assembly-0.0.1rc4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7234aad5d05cd0d99319d2ffe0d0dde8fc93899e16852ba7542487775bfcf9e7", size = 24340598, upload-time = "2026-07-13T03:04:50.683Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/a8/e638615ce78decde0723dde8c0c7b8702348320ddb1770b9e9910a8d6217/agent_assembly-0.0.1rc4-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:1e86de9b352e8f1d0c848ed8e0e72513541a252be93635d03fa9d10f2ca99e89", size = 23980190, upload-time = "2026-07-13T03:04:53.679Z" },
+    { url = "https://files.pythonhosted.org/packages/9d/56/554620896bfd4a9d060d3b4d7dcb57004703b62bbe26b1ea5cd83aa635ae/agent_assembly-0.0.1rc4-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:2919cec0d64732ebddf1e25e2455eefc77258bf348620aed875c1116e0b15f56", size = 22262954, upload-time = "2026-07-13T03:04:56.6Z" },
+    { url = "https://files.pythonhosted.org/packages/7d/21/f22195e4932bbe7bd3255c2cfa2e741181219af71f47a57c665d4e929b9a/agent_assembly-0.0.1rc4-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c51e138cef2b15114d2f714173bb5acfcab5e797edcf77b13def281c664556bd", size = 22693728, upload-time = "2026-07-13T03:04:59.203Z" },
+    { url = "https://files.pythonhosted.org/packages/70/12/717863c7f54032e906e2e7dde10eec4b7d61c01b187491cce02f5bb1a03a/agent_assembly-0.0.1rc4-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:271b75b880d350e1734ecbe15ee8ae07b13fa06a156dde3474f9659f1a1c82f9", size = 24341766, upload-time = "2026-07-13T03:05:02.566Z" },
+    { url = "https://files.pythonhosted.org/packages/7a/c7/65ab55391ef8356f09db371abc51b7bf9ad7a76cbe39c1a7de746d83c119/agent_assembly-0.0.1rc4-cp314-cp314-macosx_10_12_x86_64.whl", hash = "sha256:33de0a721621ca9ff6cc872111349532b7d0b6875c10659c0290e086ae819be7", size = 23980678, upload-time = "2026-07-13T03:05:05.184Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/b8/b83ff9dca7875ec05baa914eb26fede29827a0fbf9fe9a97db3f951391e8/agent_assembly-0.0.1rc4-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:241b7455591c7366ec6244dde5c270550084046350976bb387a14f46ca933479", size = 22261650, upload-time = "2026-07-13T03:05:08.198Z" },
+    { url = "https://files.pythonhosted.org/packages/dd/4a/f76a95d9c2af778ce234e3015a04e5504b5c8d6419c190a503c456ccc9b6/agent_assembly-0.0.1rc4-cp314-cp314-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:68bca758155307988dbabb30c07242b2d48e73ea0343eb832d057c55f5e9d6df", size = 22694432, upload-time = "2026-07-13T03:05:11.519Z" },
+    { url = "https://files.pythonhosted.org/packages/88/da/6d39dd297b0c4b64406647eef7b1c8e415868f09f79567f2fd68d5522ce4/agent_assembly-0.0.1rc4-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f32704c72ab2efe5a446e18cb77dc0ec52a29474cad4334f02977d061d4a3b3e", size = 24342570, upload-time = "2026-07-13T03:05:14.205Z" },
 ]
 
 [[package]]
@@ -350,10 +358,10 @@ name = "agent-framework-hyperlight"
 version = "1.0.0b260709"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "agent-framework-core" },
-    { name = "hyperlight-sandbox" },
-    { name = "hyperlight-sandbox-backend-wasm" },
-    { name = "hyperlight-sandbox-python-guest" },
+    { name = "agent-framework-core", marker = "python_full_version < '3.14'" },
+    { name = "hyperlight-sandbox", marker = "python_full_version < '3.14'" },
+    { name = "hyperlight-sandbox-backend-wasm", marker = "(python_full_version < '3.14' and platform_machine == 'x86_64' and sys_platform == 'linux') or (python_full_version < '3.14' and platform_machine == 'AMD64' and sys_platform == 'win32')" },
+    { name = "hyperlight-sandbox-python-guest", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/1d/06b3b6adf46315a074fa458af00aac5ab37540b313f091cfd52217ee1c5e/agent_framework_hyperlight-1.0.0b260709.tar.gz", hash = "sha256:04ded1f1ffe2ad4de3bfd5f648411db585baf9659d8c44501760c473bd68fad8", size = 22165, upload-time = "2026-07-10T03:42:32.531Z" }
 wheels = [
@@ -566,9 +574,9 @@ name = "aiologic"
 version = "0.17.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "sniffio" },
-    { name = "typing-extensions" },
-    { name = "wrapt" },
+    { name = "sniffio", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "wrapt", marker = "python_full_version < '3.13'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f1/7a/d51f2fde1e8ae8a83431f8e97b7a71e9358cdb1d4d2ce6be387fa44d68de/aiologic-0.17.1.tar.gz", hash = "sha256:2e1b93b9e88ced318c2a63ad7b382688f40cbfe40e3d42258d49dc9c5aea179d", size = 252354, upload-time = "2026-06-27T20:41:33.25Z" }
 wheels = [
@@ -987,7 +995,7 @@ name = "clr-loader"
 version = "0.2.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi" },
+    { name = "cffi", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/18/24/c12faf3f61614b3131b5c98d3bf0d376b49c7feaa73edca559aeb2aee080/clr_loader-0.2.10.tar.gz", hash = "sha256:81f114afbc5005bafc5efe5af1341d400e22137e275b042a8979f3feb9fc9446", size = 83605, upload-time = "2026-01-03T23:13:06.984Z" }
 wheels = [
@@ -1058,8 +1066,8 @@ name = "culsans"
 version = "0.11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "aiologic" },
-    { name = "typing-extensions" },
+    { name = "aiologic", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/d9/e3/49afa1bc180e0d28008ec6bcdf82a4072d1c7a41032b5b759b60814ca4b0/culsans-0.11.0.tar.gz", hash = "sha256:0b43d0d05dce6106293d114c86e3fb4bfc63088cfe8ff08ed3fe36891447fe33", size = 107546, upload-time = "2025-12-31T23:15:38.196Z" }
 wheels = [
@@ -1785,7 +1793,7 @@ live = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agent-assembly", specifier = "==0.0.1rc3" },
+    { name = "agent-assembly", specifier = "==0.0.1rc4" },
     { name = "agent-framework", marker = "extra == 'live'", specifier = ">=1.11.0,<2" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.1.1" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=1.4.0" },
@@ -2211,8 +2219,8 @@ name = "powerfx"
 version = "0.0.34"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi" },
-    { name = "pythonnet" },
+    { name = "cffi", marker = "python_full_version < '3.14'" },
+    { name = "pythonnet", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9f/fb/6c4bf87e0c74ca1c563921ce89ca1c5785b7576bca932f7255cdf81082a7/powerfx-0.0.34.tar.gz", hash = "sha256:956992e7afd272657ed16d80f4cad24ec95d9e4a79fb9dfa4a068a09e136af32", size = 3237555, upload-time = "2025-12-22T15:50:59.682Z" }
 wheels = [
@@ -2571,7 +2579,7 @@ name = "pythonnet"
 version = "3.0.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "clr-loader" },
+    { name = "clr-loader", marker = "python_full_version < '3.14'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/9a/d6/1afd75edd932306ae9bd2c2d961d603dc2b52fcec51b04afea464f1f6646/pythonnet-3.0.5.tar.gz", hash = "sha256:48e43ca463941b3608b32b4e236db92d8d40db4c58a75ace902985f76dac21cf", size = 239212, upload-time = "2024-12-13T08:30:44.393Z" }
 wheels = [

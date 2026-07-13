@@ -1,10 +1,10 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.12"
 
 [[package]]
 name = "agent-assembly"
-version = "0.0.1rc3"
+version = "0.0.1rc4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "grpcio" },
@@ -13,12 +13,20 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/21/b4/011d51322a34ceec5bda83408191ca47748c3b8fa122733dcace38ec03db/agent_assembly-0.0.1rc3.tar.gz", hash = "sha256:dcad78135cf05ab9e415afdc42d21215fd11dc3df62bcff43818376bdfeed983", size = 104197, upload-time = "2026-07-04T00:42:16.565Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/db/65/0aebe26e01ecb33047f5227d1f45714b6868effcfda17ccdebab30edb57c/agent_assembly-0.0.1rc4.tar.gz", hash = "sha256:d82440cc267245c395afe47c0ac7119457e8e125a240cde60d8b27e7d4cc8685", size = 108359, upload-time = "2026-07-13T03:05:16.638Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7a/d3/1383bec1bd0a6fb0bcbb2cc0cd4d0555ccfcb775a9ed1f0c9fc9534fe08b/agent_assembly-0.0.1rc3-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:34a5e00681dcc58bbbf812342149d28725977c846bda0aa0102d1ac3d97e5b77", size = 19629009, upload-time = "2026-07-04T00:42:05.671Z" },
-    { url = "https://files.pythonhosted.org/packages/d3/67/f9778d84fad1c570c7e6f73f6b9eb42271dabf7ba3339dcc23b687d22a53/agent_assembly-0.0.1rc3-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:70a3e8da1b66df8445407ee7a97412303569fdf273a0b0953973ce1efba20fa2", size = 17607845, upload-time = "2026-07-04T00:42:08.863Z" },
-    { url = "https://files.pythonhosted.org/packages/c5/e7/209baedee5acb75187dbfdb8f8d3798e9cad547bd62ae61fb4c8efc5b442/agent_assembly-0.0.1rc3-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e8787cb9eb5d6648a8762236f0c9b345af8d8a80893825f2c08a719f2a217ad8", size = 19024550, upload-time = "2026-07-04T00:42:11.495Z" },
-    { url = "https://files.pythonhosted.org/packages/01/8d/5f0da9d58bcb8fb68a237205cd06bb2449ad531bec796a93b87e26e5a80a/agent_assembly-0.0.1rc3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7c9941e0566efb31d46fdebe4e8556c40415532c4aa0be11305cdbdeda8beb65", size = 20538409, upload-time = "2026-07-04T00:42:14.424Z" },
+    { url = "https://files.pythonhosted.org/packages/26/53/c16e07a498300219e2ae82100d2df403de9ee35b6675432c8135aad20b72/agent_assembly-0.0.1rc4-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:8c4f5706f42324a5404edc893854ad4a6306075016eb1f1023dc3d207fce7022", size = 23980322, upload-time = "2026-07-13T03:04:40.794Z" },
+    { url = "https://files.pythonhosted.org/packages/48/1c/3f70aa2edc40371225d4ce2449241ff39df49f75c08ef4056ded66ba0029/agent_assembly-0.0.1rc4-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:fbb8bf36d192edda42d409752a4cec9fe39b17c5b589517c65ae193a9901821c", size = 22262965, upload-time = "2026-07-13T03:04:43.844Z" },
+    { url = "https://files.pythonhosted.org/packages/74/cb/88fcb6beecf9460a76535f21dfecbbe502c99cff47100eee580032fc6e39/agent_assembly-0.0.1rc4-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6fdff6b9fb32c3a7eb598e441501a7ad4cee742ebb4b879ca09dad6fe3291230", size = 22692499, upload-time = "2026-07-13T03:04:46.651Z" },
+    { url = "https://files.pythonhosted.org/packages/15/ee/9f1690ede35fce6d790baf097b54dad082009ef990ee69138b7caef8ae0a/agent_assembly-0.0.1rc4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7234aad5d05cd0d99319d2ffe0d0dde8fc93899e16852ba7542487775bfcf9e7", size = 24340598, upload-time = "2026-07-13T03:04:50.683Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/a8/e638615ce78decde0723dde8c0c7b8702348320ddb1770b9e9910a8d6217/agent_assembly-0.0.1rc4-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:1e86de9b352e8f1d0c848ed8e0e72513541a252be93635d03fa9d10f2ca99e89", size = 23980190, upload-time = "2026-07-13T03:04:53.679Z" },
+    { url = "https://files.pythonhosted.org/packages/9d/56/554620896bfd4a9d060d3b4d7dcb57004703b62bbe26b1ea5cd83aa635ae/agent_assembly-0.0.1rc4-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:2919cec0d64732ebddf1e25e2455eefc77258bf348620aed875c1116e0b15f56", size = 22262954, upload-time = "2026-07-13T03:04:56.6Z" },
+    { url = "https://files.pythonhosted.org/packages/7d/21/f22195e4932bbe7bd3255c2cfa2e741181219af71f47a57c665d4e929b9a/agent_assembly-0.0.1rc4-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c51e138cef2b15114d2f714173bb5acfcab5e797edcf77b13def281c664556bd", size = 22693728, upload-time = "2026-07-13T03:04:59.203Z" },
+    { url = "https://files.pythonhosted.org/packages/70/12/717863c7f54032e906e2e7dde10eec4b7d61c01b187491cce02f5bb1a03a/agent_assembly-0.0.1rc4-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:271b75b880d350e1734ecbe15ee8ae07b13fa06a156dde3474f9659f1a1c82f9", size = 24341766, upload-time = "2026-07-13T03:05:02.566Z" },
+    { url = "https://files.pythonhosted.org/packages/7a/c7/65ab55391ef8356f09db371abc51b7bf9ad7a76cbe39c1a7de746d83c119/agent_assembly-0.0.1rc4-cp314-cp314-macosx_10_12_x86_64.whl", hash = "sha256:33de0a721621ca9ff6cc872111349532b7d0b6875c10659c0290e086ae819be7", size = 23980678, upload-time = "2026-07-13T03:05:05.184Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/b8/b83ff9dca7875ec05baa914eb26fede29827a0fbf9fe9a97db3f951391e8/agent_assembly-0.0.1rc4-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:241b7455591c7366ec6244dde5c270550084046350976bb387a14f46ca933479", size = 22261650, upload-time = "2026-07-13T03:05:08.198Z" },
+    { url = "https://files.pythonhosted.org/packages/dd/4a/f76a95d9c2af778ce234e3015a04e5504b5c8d6419c190a503c456ccc9b6/agent_assembly-0.0.1rc4-cp314-cp314-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:68bca758155307988dbabb30c07242b2d48e73ea0343eb832d057c55f5e9d6df", size = 22694432, upload-time = "2026-07-13T03:05:11.519Z" },
+    { url = "https://files.pythonhosted.org/packages/88/da/6d39dd297b0c4b64406647eef7b1c8e415868f09f79567f2fd68d5522ce4/agent_assembly-0.0.1rc4-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f32704c72ab2efe5a446e18cb77dc0ec52a29474cad4334f02977d061d4a3b3e", size = 24342570, upload-time = "2026-07-13T03:05:14.205Z" },
 ]
 
 [[package]]
@@ -744,7 +752,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agent-assembly", specifier = "==0.0.1rc3" },
+    { name = "agent-assembly", specifier = "==0.0.1rc4" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.1.1" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.15.1" },
     { name = "smolagents", specifier = ">=1.26.0,<2.0.0" },
