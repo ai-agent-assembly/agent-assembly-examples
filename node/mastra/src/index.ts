@@ -20,6 +20,7 @@ async function main(): Promise<void> {
   console.log("=== Mastra — Agent Assembly Governance Example ===\n");
   console.log("Tools defined with Mastra's createTool, governed by withAssembly.\n");
 
+  // region: quickstart
   // Wrap the Mastra tools with withAssembly. Each governed entry delegates to the
   // real Mastra tool's execute, so the policy is enforced before the tool runs.
   const tools = withAssembly(
@@ -33,6 +34,7 @@ async function main(): Promise<void> {
     },
     { gatewayClient: createPolicyGatewayClient(), agentId: "mastra-example-agent" }
   );
+  // endregion
 
   console.log("Running allowed tool: get_stock_price");
   const price = await tools.get_stock_price.execute({ ticker: "AASM" });
