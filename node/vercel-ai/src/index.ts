@@ -6,6 +6,7 @@ async function main(): Promise<void> {
   console.log("=== Vercel AI SDK — Agent Assembly Governance Example ===\n");
   console.log("Tools defined with the Vercel AI SDK `tool()` factory, governed by withAssembly.\n");
 
+  // region: quickstart
   // withAssembly wraps each tool's `execute`, keying the policy by the map key.
   // The Vercel AI SDK tools run unchanged; only governance is layered on top.
   const tools = withAssembly(
@@ -15,6 +16,7 @@ async function main(): Promise<void> {
     },
     { gatewayClient: createPolicyGatewayClient(), agentId: "vercel-ai-example-agent" }
   );
+  // endregion
 
   console.log("Running allowed tool: get_weather");
   const weather = await tools.get_weather.execute?.(
