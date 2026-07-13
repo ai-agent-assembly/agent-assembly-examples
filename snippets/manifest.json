@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "generator": "scripts/extract_snippets.py",
+  "sdks": {
+    "python": [
+      {
+        "framework_id": "agno-tool-policy",
+        "label": "Agno",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/agno-tool-policy.py",
+        "source_example": "python/agno-tool-policy/src/main.py"
+      },
+      {
+        "framework_id": "autogen-tool-policy",
+        "label": "AutoGen",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/autogen-tool-policy.py",
+        "source_example": "python/autogen-tool-policy/src/main.py"
+      },
+      {
+        "framework_id": "crewai-research-crew",
+        "label": "CrewAI",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/crewai-research-crew.py",
+        "source_example": "python/crewai-research-crew/src/main.py"
+      },
+      {
+        "framework_id": "custom-tool-policy",
+        "label": "Custom (no framework)",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/custom-tool-policy.py",
+        "source_example": "python/custom-tool-policy/src/main.py"
+      },
+      {
+        "framework_id": "google-adk",
+        "label": "Google ADK",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/google-adk.py",
+        "source_example": "python/google-adk/src/main.py"
+      },
+      {
+        "framework_id": "haystack-tool-policy",
+        "label": "Haystack",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/haystack-tool-policy.py",
+        "source_example": "python/haystack-tool-policy/src/main.py"
+      },
+      {
+        "framework_id": "langchain-basic-agent",
+        "label": "LangChain",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/langchain-basic-agent.py",
+        "source_example": "python/langchain-basic-agent/src/main.py"
+      },
+      {
+        "framework_id": "langchain-research-agent",
+        "label": "LangChain (Research Agent)",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/langchain-research-agent.py",
+        "source_example": "python/langchain-research-agent/src/main.py"
+      },
+      {
+        "framework_id": "langgraph",
+        "label": "LangGraph",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/langgraph.py",
+        "source_example": "python/langgraph/src/main.py"
+      },
+      {
+        "framework_id": "llamaindex-tool-policy",
+        "label": "LlamaIndex",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/llamaindex-tool-policy.py",
+        "source_example": "python/llamaindex-tool-policy/src/main.py"
+      },
+      {
+        "framework_id": "microsoft-agent-framework-tool-policy",
+        "label": "Microsoft Agent Framework",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/microsoft-agent-framework-tool-policy.py",
+        "source_example": "python/microsoft-agent-framework-tool-policy/src/main.py"
+      },
+      {
+        "framework_id": "openai-agents-sdk",
+        "label": "OpenAI Agents SDK",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/openai-agents-sdk.py",
+        "source_example": "python/openai-agents-sdk/src/main.py"
+      },
+      {
+        "framework_id": "pydantic-ai",
+        "label": "Pydantic AI",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/pydantic-ai.py",
+        "source_example": "python/pydantic-ai/src/main.py"
+      },
+      {
+        "framework_id": "semantic-kernel-tool-policy",
+        "label": "Semantic Kernel",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/semantic-kernel-tool-policy.py",
+        "source_example": "python/semantic-kernel-tool-policy/src/main.py"
+      },
+      {
+        "framework_id": "smolagents-tool-policy",
+        "label": "smolagents",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/smolagents-tool-policy.py",
+        "source_example": "python/smolagents-tool-policy/src/main.py"
+      },
+      {
+        "framework_id": "strands-agents-tool-policy",
+        "label": "Strands Agents",
+        "status": "validated",
+        "lang": "python",
+        "snippet_path": "snippets/python/strands-agents-tool-policy.py",
+        "source_example": "python/strands-agents-tool-policy/src/main.py"
+      }
+    ],
+    "node": [
+      {
+        "framework_id": "custom-tool-policy",
+        "label": "Custom (no framework)",
+        "status": "validated",
+        "lang": "typescript",
+        "snippet_path": "snippets/node/custom-tool-policy.ts",
+        "source_example": "node/custom-tool-policy/src/index.ts"
+      },
+      {
+        "framework_id": "langchain-js-basic-agent",
+        "label": "LangChain.js",
+        "status": "validated",
+        "lang": "typescript",
+        "snippet_path": "snippets/node/langchain-js-basic-agent.ts",
+        "source_example": "node/langchain-js-basic-agent/src/index.ts"
+      },
+      {
+        "framework_id": "langgraph-js",
+        "label": "LangGraph.js",
+        "status": "validated",
+        "lang": "typescript",
+        "snippet_path": "snippets/node/langgraph-js.ts",
+        "source_example": "node/langgraph-js/src/index.ts"
+      },
+      {
+        "framework_id": "mastra",
+        "label": "Mastra",
+        "status": "validated",
+        "lang": "typescript",
+        "snippet_path": "snippets/node/mastra.ts",
+        "source_example": "node/mastra/src/index.ts"
+      },
+      {
+        "framework_id": "openai-node-tool-policy",
+        "label": "OpenAI (Node)",
+        "status": "validated",
+        "lang": "typescript",
+        "snippet_path": "snippets/node/openai-node-tool-policy.ts",
+        "source_example": "node/openai-node-tool-policy/src/index.ts"
+      },
+      {
+        "framework_id": "vercel-ai",
+        "label": "Vercel AI SDK",
+        "status": "validated",
+        "lang": "typescript",
+        "snippet_path": "snippets/node/vercel-ai.ts",
+        "source_example": "node/vercel-ai/src/index.ts"
+      }
+    ],
+    "go": [
+      {
+        "framework_id": "basic-agent",
+        "label": "Plain SDK",
+        "status": "validated",
+        "lang": "go",
+        "snippet_path": "snippets/go/basic-agent.go",
+        "source_example": "go/basic-agent/main.go"
+      },
+      {
+        "framework_id": "cli-runtime-integration",
+        "label": "CLI Runtime (sidecar)",
+        "status": "validated",
+        "lang": "go",
+        "snippet_path": "snippets/go/cli-runtime-integration.go",
+        "source_example": "go/cli-runtime-integration/main.go"
+      },
+      {
+        "framework_id": "langchaingo",
+        "label": "LangChainGo",
+        "status": "validated",
+        "lang": "go",
+        "snippet_path": "snippets/go/langchaingo.go",
+        "source_example": "go/langchaingo/main.go"
+      },
+      {
+        "framework_id": "tool-policy",
+        "label": "Tool Policy (plain)",
+        "status": "validated",
+        "lang": "go",
+        "snippet_path": "snippets/go/tool-policy.go",
+        "source_example": "go/tool-policy/main.go"
+      }
+    ]
+  }
+}
