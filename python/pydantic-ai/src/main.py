@@ -56,6 +56,7 @@ async def _run_demo() -> None:
     # >=0.3.0, `Tool._run` on <0.3.0); because the patch is idempotent,
     # registering first makes init_assembly's auto-detection a no-op and keeps
     # the offline `LocalPolicyEngine` wired as the governance interceptor.
+    # region: quickstart
     adapter = PydanticAIAdapter()
     adapter.set_process_agent_id("pydantic-ai-demo-agent")
     adapter.register_hooks(LocalPolicyEngine())
@@ -67,6 +68,7 @@ async def _run_demo() -> None:
             agent_id="pydantic-ai-demo-agent",
             mode="sdk-only",
         ) as ctx:
+            # endregion
             print(f"  Agent:    {ctx.client.agent_id}")
             print(f"  Gateway:  {ctx.client.gateway_url}")
             print(f"  Mode:     {ctx.network_mode} (offline demo)")

@@ -6,6 +6,7 @@ async function main(): Promise<void> {
   console.log("=== Custom Tool Policy — Minimal TypeScript Example ===\n");
   console.log("No agent framework required. Using @agent-assembly/sdk directly.\n");
 
+  // region: quickstart
   const tools = withAssembly(
     {
       read_file: {
@@ -22,6 +23,7 @@ async function main(): Promise<void> {
     },
     { gatewayClient: createPolicyGatewayClient(), agentId: "custom-tool-policy-agent" }
   );
+  // endregion
 
   console.log("Calling allowed tool: read_file");
   console.log(`  [ALLOW] ${await tools.read_file.execute({ path: "/data/report.txt" })}`);

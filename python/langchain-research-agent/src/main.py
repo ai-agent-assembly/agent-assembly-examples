@@ -101,6 +101,7 @@ def main(argv: list[str] | None = None) -> None:
 
     print(f"Initializing Agent Assembly (gateway: {gateway_url}, sdk-only mode)...")
 
+    # region: quickstart
     with init_assembly(
         gateway_url=gateway_url,
         api_key=api_key,
@@ -114,6 +115,7 @@ def main(argv: list[str] | None = None) -> None:
 
         policy = BalancedPolicyEngine(daily_budget_usd=DAILY_BUDGET_USD)
         handler = AssemblyCallbackHandler(interceptor=policy)
+        # endregion
 
         print("Balanced policy (local simulation of gateway policy):")
         print(f"  ALLOWLIST — outbound egress to {', '.join(NETWORK_ALLOWLIST)}")

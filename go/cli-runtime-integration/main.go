@@ -19,6 +19,7 @@ func (e *echoTool) Call(_ context.Context, input string) (string, error) {
 }
 
 func main() {
+	// region: quickstart
 	ctx := assembly.WithAgentID(context.Background(), "cli-runtime-demo")
 
 	// Attempt to start the aasm sidecar. This shows the CLI runtime integration
@@ -32,6 +33,7 @@ func main() {
 	defer client.Close()
 
 	tools := assembly.WrapTools([]assembly.Tool{&echoTool{}}, client)
+	// endregion
 
 	input := "Hello from the CLI runtime!"
 	fmt.Printf("[assembly] governance: ALLOWED  tool=echo input=%q\n", input)

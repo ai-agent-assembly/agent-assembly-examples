@@ -87,6 +87,7 @@ def main(argv: list[str] | None = None) -> None:
 
     print(f"Initializing Agent Assembly (gateway: {gateway_url}, sdk-only mode)...")
 
+    # region: quickstart
     with init_assembly(
         gateway_url=gateway_url,
         api_key=api_key,
@@ -111,6 +112,7 @@ def main(argv: list[str] | None = None) -> None:
 
         policy = CrewPolicyEngine(approver=MockApprover(auto_approve=False))
         handler = AssemblyCallbackHandler(interceptor=policy)
+        # endregion
 
         print("Running crew delegation trajectory:")
         print("-" * 46)
