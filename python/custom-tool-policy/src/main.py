@@ -46,6 +46,7 @@ def main() -> None:
 
     print(f"Initializing Agent Assembly (gateway: {gateway_url}, sdk-only mode)...")
 
+    # region: quickstart
     with init_assembly(
         gateway_url=gateway_url,
         api_key=api_key,
@@ -66,6 +67,7 @@ def main() -> None:
             "write_to_disk": write_to_disk,
         }
         tools = {name: governed(name, fn, policy) for name, fn in raw_fns.items()}
+        # endregion
 
         print("Policy rules (local simulation of gateway policy):")
         print("  DENY   — send_http_request, write_to_disk  (network / disk writes)")
