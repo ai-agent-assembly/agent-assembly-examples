@@ -68,6 +68,7 @@ def main() -> None:
     # decisions win; init's auto-detect then finds Tool.__call__ already governed
     # and leaves it. In production init_assembly() wires the real gateway
     # interceptor here automatically — no local policy needed.
+    # region: quickstart
     policy = LocalPolicyEngine()
     patch = SmolagentsPatch(policy)
     patch.apply()
@@ -80,6 +81,7 @@ def main() -> None:
         agent_id="smolagents-demo-agent",
         mode="sdk-only",
     ) as ctx:
+        # endregion
         print(f"  Agent:    {ctx.client.agent_id}")
         print(f"  Gateway:  {ctx.client.gateway_url}")
         print(f"  Mode:     {ctx.network_mode} (offline demo)")
