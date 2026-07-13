@@ -19,6 +19,7 @@ func (e *echoTool) Call(_ context.Context, input string) (string, error) {
 
 func main() {
 	// Tag the context so governance records include this agent's ID.
+	// region: quickstart
 	ctx := assembly.WithAgentID(context.Background(), "basic-agent-demo")
 
 	// Use the offline mock governance client.
@@ -28,6 +29,7 @@ func main() {
 
 	// Wrap the tool — every Call now goes through the governance client first.
 	tools := assembly.WrapTools([]assembly.Tool{&echoTool{}}, client)
+	// endregion
 
 	input := "Hello, Agent Assembly!"
 	fmt.Printf("[assembly] governance: ALLOWED  tool=echo input=%q\n", input)
