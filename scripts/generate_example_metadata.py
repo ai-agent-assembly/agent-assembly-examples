@@ -271,8 +271,6 @@ def rewrite_go_manifest(path: Path, sdk: GoSdk) -> bool:
 # future bumps (and the --check audit) cover it. The negative lookbehind anchors
 # the match to the standalone ``agent-assembly`` project name so it can never
 # fire on ``@agent-assembly/sdk`` or ``github.com/ai-agent-assembly/...``.
-_DOCKERFILE = "Dockerfile"
-
 _DOCKERFILE_PIN_RE = re.compile(
     r'(?<![\w/@.-])(?P<pre>agent-assembly==)(?P<ver>[^"\s]+)'
 )
