@@ -23,7 +23,7 @@ on:
       - "scenarios/**/Dockerfile"
       - "scenarios/**/README.md"
       - "scripts/test_generate_example_metadata.py"
-      - ".github/workflows/example-metadata-check.yml"
+      - ".github/workflows/**"
   push:
     branches:
       - master

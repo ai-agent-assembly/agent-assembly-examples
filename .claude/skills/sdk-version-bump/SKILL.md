@@ -46,10 +46,12 @@ distinct formats — they are not interchangeable:
 `scripts/generate_example_metadata.py` reads this file and rewrites every
 version-bearing surface it owns: python/node/go manifests, scenario
 `node-agent`/`go-agent` manifests, scenario Dockerfile `agent-assembly==` pins,
-the generated `sdk-install` block, and the Prerequisites row in both table and
-bullet form. The generator (and the `--check` audit) also own two more
-README-prose surfaces (AAASM-4722): a Prerequisites row whose label cell is the
-bare backtick **package** name (``| `agent-assembly` SDK | ... |``,
+the generated `sdk-install` block, the Prerequisites row in both table and
+bullet form, and the `agent-assembly` `pip install` pin in the repo's own CI
+workflows (`.github/workflows/*.yml`, AAASM-4727 — forced to the exact `==`
+form, never a bare `>=` floor). The generator (and the `--check` audit) also own
+two more README-prose surfaces (AAASM-4722): a Prerequisites row whose label
+cell is the bare backtick **package** name (``| `agent-assembly` SDK | ... |``,
 ``| `@agent-assembly/sdk` | ... |``) rather than the prose `Agent Assembly
 <Lang> SDK` name, and a raw install-hint literal in running prose outside the
 generated block (`agent-assembly==<ver>`, `@agent-assembly/sdk@<ver>`). It

@@ -290,6 +290,31 @@ def rewrite_dockerfile(path: Path, sdk: PythonSdk) -> bool:
     return _write_if_changed(path, new_text)
 
 
+# The repo's own CI workflows ``pip install`` the published Python SDK by pin
+# (the live-lane python driver install). Left to hand-maintenance these drift on
+# every SDK bump and evade the generator entirely — AAASM-4727 found
+# ``verify-live.yml`` still on a bare ``>=0.0.1rc3`` floor two SDK bumps behind.
+# The generator now owns that pin too, and — unlike the manifest rewriter, which
+# self-heals only the version and lets the --check operator audit flag a bad
+# operator — it rewrites the *whole* pin to the exact ``==<version>`` form, since
+# a bare floor in a CI install command has no legitimate use here. The same
+# negative-lookbehind name-anchor as the Dockerfile pin keeps it from firing on
+# ``@agent-assembly/sdk`` or ``github.com/ai-agent-assembly/...``.
+_WORKFLOW_PIN_RE = re.compile(
+    r"(?<![\w/@.-])agent-assembly(?:==|>=|~=|<=|!=|<|>)(?P<ver>[^\"'\s,]+)"
+)
+
+
+def rewrite_workflow_pin(path: Path, sdk: PythonSdk) -> bool:
+    text = path.read_text(encoding="utf-8")
+
+    def _sub(match: re.Match[str]) -> str:
+        return f"agent-assembly=={sdk.version}"
+
+    new_text = _WORKFLOW_PIN_RE.sub(_sub, text)
+    return _write_if_changed(path, new_text)
+
+
 # ---------------------------------------------------------------------------
 # README bounded-block rewrites
 # ---------------------------------------------------------------------------
@@ -781,6 +806,33 @@ def process_dockerfiles(repo_root: Path, versions: SdkVersions) -> list[Path]:
     return changed
 
 
+# Bounded, non-recursive walk over the repo's own CI workflows. A `.github`
+# subdirectory tree is never recursed into (no ``**``) so only the workflow
+# files themselves — not composite-action fixtures or vendored trees — are in
+# scope.
+_WORKFLOW_GLOBS = (".github/workflows/*.yml", ".github/workflows/*.yaml")
+
+
+def _workflow_files(repo_root: Path) -> list[Path]:
+    """Return every in-scope CI workflow file."""
+
+    return _globbed(repo_root, _WORKFLOW_GLOBS)
+
+
+def process_workflows(repo_root: Path, versions: SdkVersions) -> list[Path]:
+    """Align the ``agent-assembly`` pip-install pin in every CI workflow.
+
+    Forces the exact ``==<version>`` operator (never a bare ``>=`` floor).
+    Returns the list of files that were rewritten.
+    """
+
+    changed: list[Path] = []
+    for workflow in _workflow_files(repo_root):
+        if rewrite_workflow_pin(workflow, versions.python):
+            changed.append(workflow)
+    return changed
+
+
 # Bounded set of README locations that may carry a prose ``## Prerequisites``
 # table: the per-example READMEs, the language landing pages, and the scenario
 # READMEs (both scenario-level and per-agent). Kept as explicit globs rather
@@ -938,6 +990,7 @@ def _audit_pins(repo_root: Path, versions: SdkVersions) -> list[str]:
         (_NODE_PIN_GLOBS, _NODE_PIN_AUDIT_RE, versions.node.version),
         (_GO_PIN_GLOBS, _GO_PIN_AUDIT_RE, versions.go.version),
         (_DOCKERFILE_GLOBS, _DOCKERFILE_PIN_RE, versions.python.version),
+        (_WORKFLOW_GLOBS, _PY_PIN_AUDIT_RE, versions.python.version),
     )
     problems: list[str] = []
     for globs, pin_re, expected in checks:
@@ -958,14 +1011,20 @@ def _audit_pins(repo_root: Path, versions: SdkVersions) -> list[str]:
 # The core SDK pin must be exact (``==``): a floor (``>=``) or open range lets a
 # resolver pull a future major and silently break an example (AAASM-4704, and the
 # repo's own "never a bare >=" rule). The version-drift audit above only checks
-# the version token, so this pass enforces the operator separately. Python
-# manifests are the only core-SDK pins that carry an operator — node pins are a
-# bare ``"<version>"`` string and go pins are a bare ``go.mod`` version.
+# the version token, so this pass enforces the operator separately. The two
+# surfaces that carry an operator-bearing ``agent-assembly`` pin are the python
+# manifests and the CI-workflow ``pip install`` commands (AAASM-4727) — node
+# pins are a bare ``"<version>"`` string and go pins are a bare ``go.mod``
+# version. The workflow rewriter already forces ``==`` on a bump, but this pass
+# also fails CI on a hand-authored bad operator before a regen runs.
 def _audit_py_operator(repo_root: Path, versions: SdkVersions) -> list[str]:
-    """Report every python core-SDK pin whose operator is not exact (``==``)."""
+    """Report every operator-bearing core-SDK pin that is not exact (``==``).
+
+    Covers both the python manifests and the CI-workflow pip-install pins.
+    """
 
     problems: list[str] = []
-    for path in _globbed(repo_root, _PY_PIN_GLOBS):
+    for path in _globbed(repo_root, _PY_PIN_GLOBS + _WORKFLOW_GLOBS):
         for lineno, line in _audit_lines(path):
             if EXEMPT_MARKER in line:
                 continue
@@ -1117,6 +1176,7 @@ def main(argv: list[str] | None = None) -> int:
     changed.extend(process_node(args.repo_root, versions))
     changed.extend(process_go(args.repo_root, versions))
     changed.extend(process_dockerfiles(args.repo_root, versions))
+    changed.extend(process_workflows(args.repo_root, versions))
     changed.extend(process_prereq_rows(args.repo_root, versions))
     changed.extend(process_readme_install_hints(args.repo_root, versions))
 
