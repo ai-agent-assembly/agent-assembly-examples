@@ -219,5 +219,46 @@ class AuditTests(_RepoTestCase):
         self.assertEqual(gen.audit(self.root, self.versions), [])
 
 
+class PythonPinOperatorTests(_RepoTestCase):
+    def test_audit_flags_non_exact_operator(self) -> None:
+        # Correct version, floor operator: the version-drift audit is clean, but
+        # the operator policy is violated (AAASM-4704).
+        _in_sync_tree(self.root)
+        _write(
+            self.root,
+            "python/ex/pyproject.toml",
+            'dependencies = [\n    "agent-assembly>=0.0.1rc5",\n]\n',
+        )
+        problems = gen.audit(self.root, self.versions)
+        self.assertEqual(len(problems), 1)
+        self.assertIn("python/ex/pyproject.toml:2", problems[0])
+        self.assertIn("operator", problems[0])
+
+    def test_audit_passes_on_exact_operator(self) -> None:
+        _in_sync_tree(self.root)  # every python pin is ``==``
+        self.assertEqual(gen.audit(self.root, self.versions), [])
+
+    def test_operator_exemption_is_honored(self) -> None:
+        _in_sync_tree(self.root)
+        _write(
+            self.root,
+            "python/ex/pyproject.toml",
+            'dependencies = [\n    "agent-assembly>=0.0.1rc5",'
+            "  # sdk-version-exempt\n]\n",
+        )
+        self.assertEqual(gen.audit(self.root, self.versions), [])
+
+    def test_rewriter_normalizes_operator_to_exact(self) -> None:
+        path = _write(
+            self.root,
+            "python/ex/pyproject.toml",
+            'dependencies = [\n    "agent-assembly>=0.0.1rc3",\n]\n',
+        )
+        changed = gen.rewrite_python_manifest(path, self.versions.python)
+        self.assertTrue(changed)
+        self.assertIn('"agent-assembly==0.0.1rc5"', path.read_text())
+        self.assertNotIn(">=", path.read_text())
+
+
 if __name__ == "__main__":
     unittest.main()
