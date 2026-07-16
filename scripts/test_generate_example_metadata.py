@@ -454,5 +454,89 @@ class BacktickRowAndInstallHintAuditTests(_RepoTestCase):
         self.assertEqual(gen.audit(self.root, self.versions), [])
 
 
+class WorkflowRewriteTests(_RepoTestCase):
+    def test_rewrites_stale_floor_pin_to_exact(self) -> None:
+        path = _write(
+            self.root,
+            ".github/workflows/verify-live.yml",
+            '        run: pip install --pre "agent-assembly>=0.0.1rc3"\n',
+        )
+        changed = gen.rewrite_workflow_pin(path, self.versions.python)
+        self.assertTrue(changed)
+        text = path.read_text()
+        self.assertIn('"agent-assembly==0.0.1rc5"', text)
+        self.assertNotIn(">=", text)
+
+    def test_forces_exact_operator_on_correct_version(self) -> None:
+        # Right version, floor operator: still rewritten to the exact ``==`` pin,
+        # since a bare floor in a CI install command has no legitimate use.
+        path = _write(
+            self.root,
+            ".github/workflows/x.yml",
+            'run: pip install "agent-assembly>=0.0.1rc5"\n',
+        )
+        changed = gen.rewrite_workflow_pin(path, self.versions.python)
+        self.assertTrue(changed)
+        self.assertIn("agent-assembly==0.0.1rc5", path.read_text())
+
+    def test_ignores_node_and_go_and_org_identifiers(self) -> None:
+        content = (
+            "image: ghcr.io/ai-agent-assembly/aa-gateway:latest\n"
+            '"@agent-assembly/sdk": "0.0.1-rc.5"\n'
+            "github.com/ai-agent-assembly/go-sdk v0.0.1-rc.5\n"
+            "# agent-assembly release notes\n"
+        )
+        path = _write(self.root, ".github/workflows/x.yml", content)
+        changed = gen.rewrite_workflow_pin(path, self.versions.python)
+        self.assertFalse(changed)
+        self.assertEqual(path.read_text(), content)
+
+    def test_walker_covers_yml_and_yaml_only_under_workflows(self) -> None:
+        _write(self.root, ".github/workflows/a.yml", "x")
+        _write(self.root, ".github/workflows/b.yaml", "x")
+        _write(self.root, ".github/other.yml", "x")  # not under workflows/
+        _write(self.root, ".github/workflows/nested/c.yml", "x")  # too deep
+        found = {
+            p.relative_to(self.root).as_posix()
+            for p in gen._workflow_files(self.root)
+        }
+        self.assertEqual(
+            found, {".github/workflows/a.yml", ".github/workflows/b.yaml"}
+        )
+
+    def test_audit_detects_stale_workflow_pin(self) -> None:
+        _in_sync_tree(self.root)
+        _write(
+            self.root,
+            ".github/workflows/verify-live.yml",
+            'run: pip install "agent-assembly==0.0.1rc3"\n',
+        )
+        problems = gen.audit(self.root, self.versions)
+        self.assertTrue(any("verify-live.yml" in p for p in problems))
+
+    def test_audit_flags_workflow_floor_operator(self) -> None:
+        # Correct version, floor operator: the version-drift audit is clean, but
+        # the operator policy is violated on the workflow surface too.
+        _in_sync_tree(self.root)
+        _write(
+            self.root,
+            ".github/workflows/verify-live.yml",
+            'run: pip install --pre "agent-assembly>=0.0.1rc5"\n',
+        )
+        problems = gen.audit(self.root, self.versions)
+        self.assertTrue(
+            any("operator" in p and "verify-live.yml" in p for p in problems)
+        )
+
+    def test_audit_honors_exempt_marker_in_workflow(self) -> None:
+        _in_sync_tree(self.root)
+        _write(
+            self.root,
+            ".github/workflows/verify-live.yml",
+            'run: pip install "agent-assembly==0.0.1rc3"  # sdk-version-exempt\n',
+        )
+        self.assertEqual(gen.audit(self.root, self.versions), [])
+
+
 if __name__ == "__main__":
     unittest.main()
