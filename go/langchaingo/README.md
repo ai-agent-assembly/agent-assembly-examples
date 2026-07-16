@@ -33,7 +33,7 @@ agent's tool calls with Agent Assembly.
 | Requirement | Version |
 |---|---|
 | Go | >= 1.26 |
-| Agent Assembly Go SDK | v0.0.1-rc.3 |
+| Agent Assembly Go SDK | v0.0.1-rc.5 |
 | LangChainGo | v0.1.14 |
 
 No live gateway and no LLM API key are required. Policy rules are applied by an

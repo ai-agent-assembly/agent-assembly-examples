@@ -33,7 +33,7 @@ Demonstrates how to integrate [Agent Assembly](https://github.com/ai-agent-assem
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1rc3 |
+| Agent Assembly Python SDK | >= 0.0.1rc5 |
 
 No `OPENAI_API_KEY` is required for the offline demo.
 

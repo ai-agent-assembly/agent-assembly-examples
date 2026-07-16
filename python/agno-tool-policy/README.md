@@ -34,7 +34,7 @@ Agno runs every function-tool call through a single chokepoint — `agno.tools.f
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1b4 |
+| Agent Assembly Python SDK | >= 0.0.1rc5 |
 | Agno | >= 2.0.0 |
 
 No API key or running gateway is required for the offline demo.
