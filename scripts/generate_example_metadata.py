@@ -193,10 +193,14 @@ def rewrite_python_manifest(path: Path, sdk: PythonSdk) -> bool:
     text = path.read_text(encoding="utf-8")
 
     def _sub(match: re.Match[str]) -> str:
+        # Normalize the operator to exact ``==``. The core SDK pin must never be a
+        # floor/open range (AAASM-4704 and the repo's "never a bare >=" rule),
+        # so a bump self-heals a drifted operator; the --check audit enforces the
+        # same invariant. The regex still captures ``op`` so a non-``==`` pin is
+        # matched and rewritten.
         indent = match.group("indent")
-        op = match.group("op")
         tail = match.group("tail")
-        return f'{indent}"{sdk.package}{op}{sdk.version}"{tail}'
+        return f'{indent}"{sdk.package}=={sdk.version}"{tail}'
 
     new_text = _PY_PIN_RE.sub(_sub, text)
     return _write_if_changed(path, new_text)
@@ -755,7 +759,7 @@ _PROSE_LABEL_RE = re.compile(r"Agent Assembly (Python|Node\.js|Go) SDK")
 # exactly ``@agent-assembly/sdk``; the go id is exactly
 # ``github.com/ai-agent-assembly/go-sdk`` followed by whitespace.
 _PY_PIN_AUDIT_RE = re.compile(
-    r"(?<![\w/@.-])agent-assembly(?:==|>=|~=|<=|!=|<|>)(?P<ver>[^\"'\s,]+)"
+    r"(?<![\w/@.-])agent-assembly(?P<op>==|>=|~=|<=|!=|<|>)(?P<ver>[^\"'\s,]+)"
 )
 _NODE_PIN_AUDIT_RE = re.compile(r'"@agent-assembly/sdk"\s*:\s*"(?P<ver>[^"]+)"')
 _GO_PIN_AUDIT_RE = re.compile(
@@ -816,6 +820,30 @@ def _audit_pins(repo_root: Path, versions: SdkVersions) -> list[str]:
     return problems
 
 
+# The core SDK pin must be exact (``==``): a floor (``>=``) or open range lets a
+# resolver pull a future major and silently break an example (AAASM-4704, and the
+# repo's own "never a bare >=" rule). The version-drift audit above only checks
+# the version token, so this pass enforces the operator separately. Python
+# manifests are the only core-SDK pins that carry an operator — node pins are a
+# bare ``"<version>"`` string and go pins are a bare ``go.mod`` version.
+def _audit_py_operator(repo_root: Path, versions: SdkVersions) -> list[str]:
+    """Report every python core-SDK pin whose operator is not exact (``==``)."""
+
+    problems: list[str] = []
+    for path in _globbed(repo_root, _PY_PIN_GLOBS):
+        for lineno, line in _audit_lines(path):
+            if EXEMPT_MARKER in line:
+                continue
+            match = _PY_PIN_AUDIT_RE.search(line)
+            if match and match.group("op") != "==":
+                rel = path.relative_to(repo_root)
+                problems.append(
+                    f"{rel}:{lineno}: uses {match.group('op')!r} operator on the "
+                    f"core SDK pin, expected '=='"
+                )
+    return problems
+
+
 def _audit_prose(repo_root: Path, versions: SdkVersions) -> list[str]:
     """Report every README/doc prose line whose SDK version drifts from the SoT.
 
@@ -854,7 +882,9 @@ def audit(repo_root: Path, versions: SdkVersions) -> list[str]:
     """Return every drifted SDK-version literal as a sorted ``file:line`` list."""
 
     return sorted(
-        _audit_pins(repo_root, versions) + _audit_prose(repo_root, versions)
+        _audit_pins(repo_root, versions)
+        + _audit_py_operator(repo_root, versions)
+        + _audit_prose(repo_root, versions)
     )
 
 
