@@ -494,6 +494,45 @@ def rewrite_prereq_bullet(path: Path, label: str, version: str) -> bool:
     return _write_if_changed(path, new_text)
 
 
+# Some scenario READMEs label the same requirement row not with the prose
+# ``Agent Assembly <Lang> SDK`` name but with the bare backtick *package* name —
+# ``| `agent-assembly` SDK | ≥ 0.0.1rc5 |`` (python), ``| `@agent-assembly/sdk`
+# | ... |`` (node), ``| `github.com/ai-agent-assembly/go-sdk` | ... |`` (go).
+# Left to hand-maintenance these drift from the SoT (AAASM-4722: they still said
+# rc.3 while the scenario's own manifest was rc.5). The generator now owns that
+# version literal too. The first cell is anchored to *start* with the backticked
+# package name (``| `pkg```), which is exactly what separates this hand-written
+# row from the generated block's row (``| Agent Assembly <Lang> SDK (`pkg`) |
+# ...``, whose first cell starts with prose) and from the plain ``Agent Assembly
+# <Lang> SDK`` prereq rows — so this pass can never touch either of those.
+def _prereq_backtick_row_re(package: str) -> re.Pattern[str]:
+    return re.compile(
+        r"^(?P<pre>\|[ \t]*`"
+        + re.escape(package)
+        + r"`[^|]*\|[ \t]*)(?P<val>[^|]*?)(?P<post>[ \t]*\|[ \t]*)$",
+        re.MULTILINE,
+    )
+
+
+def rewrite_prereq_backtick_row(path: Path, package: str, version: str) -> bool:
+    """Align a backtick-``package``-labelled Prerequisites row with the SoT.
+
+    Rewrites only the first version token in the row's value cell; the comparison
+    operator (``≥``/``>=``) and any trailing note are left untouched, exactly like
+    ``rewrite_prereq_row``. A no-op for READMEs that do not carry the row.
+    """
+
+    text = path.read_text(encoding="utf-8")
+    row_re = _prereq_backtick_row_re(package)
+
+    def _sub(match: re.Match[str]) -> str:
+        new_val = _VERSION_TOKEN_RE.sub(version, match.group("val"), count=1)
+        return f"{match.group('pre')}{new_val}{match.group('post')}"
+
+    new_text = row_re.sub(_sub, text)
+    return _write_if_changed(path, new_text)
+
+
 # ---------------------------------------------------------------------------
 # Directory walkers
 # ---------------------------------------------------------------------------
@@ -716,6 +755,13 @@ def process_prereq_rows(repo_root: Path, versions: SdkVersions) -> list[Path]:
         ("Node.js", versions.node.version),
         ("Go", versions.go.version),
     )
+    # The backtick-package-name variant is keyed on the package/module id, not
+    # the prose language label, since that is what its label cell carries.
+    backtick_packages = (
+        (versions.python.package, versions.python.version),
+        (versions.node.package, versions.node.version),
+        (versions.go.module, versions.go.version),
+    )
     changed: list[Path] = []
     for readme in _prereq_readmes(repo_root):
         touched = False
@@ -723,6 +769,9 @@ def process_prereq_rows(repo_root: Path, versions: SdkVersions) -> list[Path]:
             if rewrite_prereq_row(readme, label, version):
                 touched = True
             if rewrite_prereq_bullet(readme, label, version):
+                touched = True
+        for package, version in backtick_packages:
+            if rewrite_prereq_backtick_row(readme, package, version):
                 touched = True
         if touched:
             changed.append(readme)
@@ -847,9 +896,10 @@ def _audit_py_operator(repo_root: Path, versions: SdkVersions) -> list[str]:
 def _audit_prose(repo_root: Path, versions: SdkVersions) -> list[str]:
     """Report every README/doc prose line whose SDK version drifts from the SoT.
 
-    Only lines that both name a language SDK (``Agent Assembly <Lang> SDK``) and
-    carry a version token are checked; the token is compared like the rewriter's
-    first-token substitution, so a generator-produced tree always audits clean.
+    Covers the human-authored prose surfaces the generator owns:
+    ``Agent Assembly <Lang> SDK`` rows/bullets and backtick-``package``-labelled
+    prereq rows. Each token is compared the same way the matching rewriter aligns
+    it, so a generator-produced tree always audits clean.
     """
 
     expected_by_label = {
@@ -857,24 +907,43 @@ def _audit_prose(repo_root: Path, versions: SdkVersions) -> list[str]:
         "Node.js": versions.node.version,
         "Go": versions.go.version,
     }
+    # Backtick-labelled prereq rows, keyed by package/module id -> SoT version.
+    backtick_checks = tuple(
+        (_prereq_backtick_row_re(package), version)
+        for package, version in (
+            (versions.python.package, versions.python.version),
+            (versions.node.package, versions.node.version),
+            (versions.go.module, versions.go.version),
+        )
+    )
     problems: list[str] = []
     for path in _globbed(repo_root, _README_GLOBS + ("docs/*.md",)):
+        rel = path.relative_to(repo_root)
         for lineno, line in _audit_lines(path):
             if EXEMPT_MARKER in line:
                 continue
+
             label_match = _PROSE_LABEL_RE.search(line)
-            if not label_match:
-                continue
-            token_match = _VERSION_TOKEN_RE.search(line)
-            if token_match is None:
-                continue
-            expected = expected_by_label[label_match.group(1)]
-            if token_match.group(0) != expected:
-                rel = path.relative_to(repo_root)
-                problems.append(
-                    f"{rel}:{lineno}: states {token_match.group(0)!r}, "
-                    f"expected {expected!r}"
-                )
+            if label_match:
+                token_match = _VERSION_TOKEN_RE.search(line)
+                if token_match is not None:
+                    expected = expected_by_label[label_match.group(1)]
+                    if token_match.group(0) != expected:
+                        problems.append(
+                            f"{rel}:{lineno}: states {token_match.group(0)!r}, "
+                            f"expected {expected!r}"
+                        )
+
+            for row_re, expected in backtick_checks:
+                row_match = row_re.search(line)
+                if row_match is None:
+                    continue
+                token_match = _VERSION_TOKEN_RE.search(row_match.group("val"))
+                if token_match is not None and token_match.group(0) != expected:
+                    problems.append(
+                        f"{rel}:{lineno}: states {token_match.group(0)!r}, "
+                        f"expected {expected!r}"
+                    )
     return problems
 
 
