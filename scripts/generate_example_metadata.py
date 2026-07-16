@@ -252,6 +252,34 @@ def rewrite_go_manifest(path: Path, sdk: GoSdk) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Dockerfile pin rewrites
+# ---------------------------------------------------------------------------
+#
+# A handful of scenario Dockerfiles ``pip install`` the published Python SDK by
+# an exact ``agent-assembly==<version>`` pin (the live-core-enforcement
+# python-agent image). Left to hand-maintenance these drift on every SDK bump —
+# AAASM-4702 had to hand-correct one. The generator now owns that pin too so
+# future bumps (and the --check audit) cover it. The negative lookbehind anchors
+# the match to the standalone ``agent-assembly`` project name so it can never
+# fire on ``@agent-assembly/sdk`` or ``github.com/ai-agent-assembly/...``.
+_DOCKERFILE = "Dockerfile"
+
+_DOCKERFILE_PIN_RE = re.compile(
+    r'(?<![\w/@.-])(?P<pre>agent-assembly==)(?P<ver>[^"\s]+)'
+)
+
+
+def rewrite_dockerfile(path: Path, sdk: PythonSdk) -> bool:
+    text = path.read_text(encoding="utf-8")
+
+    def _sub(match: re.Match[str]) -> str:
+        return f"{match.group('pre')}{sdk.version}"
+
+    new_text = _DOCKERFILE_PIN_RE.sub(_sub, text)
+    return _write_if_changed(path, new_text)
+
+
+# ---------------------------------------------------------------------------
 # README bounded-block rewrites
 # ---------------------------------------------------------------------------
 
@@ -464,6 +492,24 @@ _PYPROJECT_TOML = "pyproject.toml"
 _README = "README.md"
 
 
+def _globbed(repo_root: Path, patterns: tuple[str, ...]) -> list[Path]:
+    """Return the de-duplicated files matched by a set of bounded globs.
+
+    The patterns are explicit (no ``**`` recursion) so vendored trees
+    (``node_modules``, ``.venv``, ``dist``, build contexts) can never leak into
+    the generator's or the audit's scope.
+    """
+
+    seen: set[Path] = set()
+    out: list[Path] = []
+    for pattern in patterns:
+        for path in sorted(repo_root.glob(pattern)):
+            if path.is_file() and path not in seen:
+                seen.add(path)
+                out.append(path)
+    return out
+
+
 def _python_subprojects(repo_root: Path) -> list[Path]:
     """Return every directory that holds a python `pyproject.toml` in scope."""
 
@@ -534,6 +580,18 @@ def _go_subprojects(repo_root: Path) -> list[Path]:
     return out
 
 
+# Bounded, non-recursive walk over the scenario Dockerfiles: a scenario may keep
+# its Dockerfile at ``scenarios/<scenario>/Dockerfile`` or one level deeper at
+# ``scenarios/<scenario>/<component>/Dockerfile`` (e.g. the python-agent image).
+_DOCKERFILE_GLOBS = ("scenarios/*/Dockerfile", "scenarios/*/*/Dockerfile")
+
+
+def _dockerfiles(repo_root: Path) -> list[Path]:
+    """Return every in-scope scenario Dockerfile."""
+
+    return _globbed(repo_root, _DOCKERFILE_GLOBS)
+
+
 def process_python(repo_root: Path, versions: SdkVersions) -> list[Path]:
     """Rewrite all in-scope python manifests and READMEs.
 
@@ -589,6 +647,19 @@ def process_go(repo_root: Path, versions: SdkVersions) -> list[Path]:
         top_level_readme, versions.go
     ):
         changed.append(top_level_readme)
+    return changed
+
+
+def process_dockerfiles(repo_root: Path, versions: SdkVersions) -> list[Path]:
+    """Align the ``agent-assembly==`` pin in every in-scope Dockerfile.
+
+    Returns the list of files that were rewritten.
+    """
+
+    changed: list[Path] = []
+    for dockerfile in _dockerfiles(repo_root):
+        if rewrite_dockerfile(dockerfile, versions.python):
+            changed.append(dockerfile)
     return changed
 
 
@@ -672,6 +743,7 @@ def main(argv: list[str] | None = None) -> int:
     changed.extend(process_python(args.repo_root, versions))
     changed.extend(process_node(args.repo_root, versions))
     changed.extend(process_go(args.repo_root, versions))
+    changed.extend(process_dockerfiles(args.repo_root, versions))
     changed.extend(process_prereq_rows(args.repo_root, versions))
 
     if changed:
