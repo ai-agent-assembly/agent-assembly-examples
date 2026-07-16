@@ -534,6 +534,74 @@ def rewrite_prereq_backtick_row(path: Path, package: str, version: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
+# README install-hint prose
+# ---------------------------------------------------------------------------
+#
+# A README may show a raw SDK install/pin *hint* in its running prose (outside
+# the generated sdk-install block) — ``pip install "agent-assembly==<ver>"``
+# (python) or ``... @agent-assembly/sdk@<ver>`` (node). These drift on every bump
+# (AAASM-4722: a live-core-enforcement "run outside Docker" hint still pinned
+# rc.3 while the scenario's Dockerfile was rc.5). The generator now owns them.
+#
+# Scoping is deliberately narrow:
+#   * The python id reuses ``_DOCKERFILE_PIN_RE``: the negative lookbehind anchors
+#     to the standalone project name, so it never fires on ``@agent-assembly/sdk``
+#     or ``github.com/ai-agent-assembly/...``. A README install hint legitimately
+#     shows ``==<version>`` (unlike a floor pin), so the ``==`` is preserved and
+#     only the version token is aligned.
+#   * The node id requires the exact ``@agent-assembly/sdk@`` install form, so a
+#     ``@agent-assembly/runtime-*`` subpackage or a bare ``@agent-assembly/sdk``
+#     mention (no trailing ``@<ver>``) can never false-match.
+#   * The substitution is applied only to the regions *outside* the generated
+#     sdk-install block, so the block (which legitimately carries ``uv add
+#     agent-assembly==<ver>`` etc.) is never disturbed by this pass.
+_README_NODE_INSTALL_RE = re.compile(
+    r"(?P<pre>@agent-assembly/sdk@)(?P<ver>[^\"'\s,)]+)"
+)
+
+
+def _sub_outside_block(
+    text: str, pattern: re.Pattern[str], repl
+) -> str:
+    """Apply ``pattern.sub(repl, ...)`` only to text outside the generated block.
+
+    The generated sdk-install block is copied through verbatim; every span
+    between (and around) blocks has the substitution applied. Keeps the prose
+    install-hint pass from fighting the generator-owned block.
+    """
+
+    out: list[str] = []
+    last = 0
+    for block in _BLOCK_RE.finditer(text):
+        out.append(pattern.sub(repl, text[last : block.start()]))
+        out.append(block.group(0))
+        last = block.end()
+    out.append(pattern.sub(repl, text[last:]))
+    return "".join(out)
+
+
+def rewrite_readme_install_hints(path: Path, versions: SdkVersions) -> bool:
+    """Align raw ``agent-assembly==`` / ``@agent-assembly/sdk@`` README hints.
+
+    Rewrites only the version token of an install hint that sits in README prose
+    outside the generated sdk-install block. A no-op for READMEs that carry no
+    such hint.
+    """
+
+    text = path.read_text(encoding="utf-8")
+
+    def _py(match: re.Match[str]) -> str:
+        return f"{match.group('pre')}{versions.python.version}"
+
+    def _node(match: re.Match[str]) -> str:
+        return f"{match.group('pre')}{versions.node.version}"
+
+    new_text = _sub_outside_block(text, _DOCKERFILE_PIN_RE, _py)
+    new_text = _sub_outside_block(new_text, _README_NODE_INSTALL_RE, _node)
+    return _write_if_changed(path, new_text)
+
+
+# ---------------------------------------------------------------------------
 # Directory walkers
 # ---------------------------------------------------------------------------
 
@@ -778,6 +846,24 @@ def process_prereq_rows(repo_root: Path, versions: SdkVersions) -> list[Path]:
     return changed
 
 
+def process_readme_install_hints(
+    repo_root: Path, versions: SdkVersions
+) -> list[Path]:
+    """Align every raw SDK install hint in README prose with the SoT.
+
+    Walks the same bounded README set as the Prerequisites rows and rewrites the
+    version token of any ``agent-assembly==`` / ``@agent-assembly/sdk@`` install
+    hint that sits outside the generated sdk-install block. Returns the list of
+    files rewritten.
+    """
+
+    changed: list[Path] = []
+    for readme in _prereq_readmes(repo_root):
+        if rewrite_readme_install_hints(readme, versions):
+            changed.append(readme)
+    return changed
+
+
 # ---------------------------------------------------------------------------
 # Orphan-version-literal audit (--check)
 # ---------------------------------------------------------------------------
@@ -896,10 +982,13 @@ def _audit_py_operator(repo_root: Path, versions: SdkVersions) -> list[str]:
 def _audit_prose(repo_root: Path, versions: SdkVersions) -> list[str]:
     """Report every README/doc prose line whose SDK version drifts from the SoT.
 
-    Covers the human-authored prose surfaces the generator owns:
-    ``Agent Assembly <Lang> SDK`` rows/bullets and backtick-``package``-labelled
-    prereq rows. Each token is compared the same way the matching rewriter aligns
-    it, so a generator-produced tree always audits clean.
+    Covers the three human-authored prose surfaces the generator owns:
+    ``Agent Assembly <Lang> SDK`` rows/bullets, backtick-``package``-labelled
+    prereq rows, and raw ``agent-assembly==`` / ``@agent-assembly/sdk@`` install
+    hints. Each token is compared the same way the matching rewriter aligns it,
+    so a generator-produced tree always audits clean. Install-hint lines inside
+    the generated sdk-install block are skipped — that block is generator-owned
+    and the prose install-hint pass deliberately excludes it.
     """
 
     expected_by_label = {
@@ -916,10 +1005,21 @@ def _audit_prose(repo_root: Path, versions: SdkVersions) -> list[str]:
             (versions.go.module, versions.go.version),
         )
     )
+    # Raw install-hint literals, checked only outside the generated block.
+    install_checks = (
+        (_DOCKERFILE_PIN_RE, versions.python.version),
+        (_README_NODE_INSTALL_RE, versions.node.version),
+    )
     problems: list[str] = []
     for path in _globbed(repo_root, _README_GLOBS + ("docs/*.md",)):
         rel = path.relative_to(repo_root)
+        in_block = False
         for lineno, line in _audit_lines(path):
+            if SDK_BLOCK_BEGIN in line:
+                in_block = True
+            elif SDK_BLOCK_END in line:
+                in_block = False
+                continue
             if EXEMPT_MARKER in line:
                 continue
 
@@ -943,6 +1043,16 @@ def _audit_prose(repo_root: Path, versions: SdkVersions) -> list[str]:
                     problems.append(
                         f"{rel}:{lineno}: states {token_match.group(0)!r}, "
                         f"expected {expected!r}"
+                    )
+
+            if in_block:
+                continue
+            for hint_re, expected in install_checks:
+                hint_match = hint_re.search(line)
+                if hint_match and hint_match.group("ver") != expected:
+                    problems.append(
+                        f"{rel}:{lineno}: install hint pins "
+                        f"{hint_match.group('ver')!r}, expected {expected!r}"
                     )
     return problems
 
@@ -1008,6 +1118,7 @@ def main(argv: list[str] | None = None) -> int:
     changed.extend(process_go(args.repo_root, versions))
     changed.extend(process_dockerfiles(args.repo_root, versions))
     changed.extend(process_prereq_rows(args.repo_root, versions))
+    changed.extend(process_readme_install_hints(args.repo_root, versions))
 
     if changed:
         print(f"Rewrote {len(changed)} file(s):")
