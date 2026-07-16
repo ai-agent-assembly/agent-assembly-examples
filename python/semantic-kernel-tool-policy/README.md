@@ -36,7 +36,7 @@ Because Semantic Kernel has no native adapter, this example governs it the frame
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1rc3 |
+| Agent Assembly Python SDK | >= 0.0.1rc5 |
 | semantic-kernel | >= 1.36.0 |
 
 No API key or running gateway is required for the offline demo — the tools are native (code) `KernelFunction`s, so no LLM connector is configured.

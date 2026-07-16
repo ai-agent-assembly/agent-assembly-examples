@@ -41,7 +41,7 @@ a single *balanced* governance policy.
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1b2 |
+| Agent Assembly Python SDK | >= 0.0.1rc5 |
 
 No running Agent Assembly gateway and no API keys are required for the mock demo.
 

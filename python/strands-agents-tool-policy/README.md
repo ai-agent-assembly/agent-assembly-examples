@@ -34,7 +34,7 @@ Strands Agents has **no native Agent Assembly adapter**, so this example governs
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1rc3 |
+| Agent Assembly Python SDK | >= 0.0.1rc5 |
 | strands-agents | >= 1.47.0 |
 
 No API key or running gateway is required for the offline demo.

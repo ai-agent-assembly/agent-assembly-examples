@@ -34,7 +34,7 @@ AutoGen (the `autogen-core` runtime shared by AutoGen and the ag2 fork) has **no
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1rc3 |
+| Agent Assembly Python SDK | >= 0.0.1rc5 |
 | autogen-core | >= 0.7.5 |
 
 No API key or running gateway is required for the offline demo.

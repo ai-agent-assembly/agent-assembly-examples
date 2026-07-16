@@ -34,7 +34,7 @@ LlamaIndex has a native Agent Assembly adapter (`agent_assembly.adapters.llamain
 |---|---|
 | Python | >= 3.12 |
 | [uv](https://github.com/astral-sh/uv) | latest |
-| Agent Assembly Python SDK | >= 0.0.1rc3 (with the LlamaIndex adapter) |
+| Agent Assembly Python SDK | >= 0.0.1rc5 (with the LlamaIndex adapter) |
 
 No API key or running gateway is required for the offline demo.
 
