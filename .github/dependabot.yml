@@ -3,6 +3,7 @@ updates:
   - package-ecosystem: "gomod"
     directories:
       - "/go/*"
+      - "/scenarios/live-core-enforcement/go-agent"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
@@ -15,6 +16,7 @@ updates:
       - "/node/*"
       - "/scenarios/*/node"
       - "/scenarios/sidecar-runtime/examples/node-agent"
+      - "/scenarios/live-core-enforcement/node-agent"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
