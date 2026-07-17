@@ -453,8 +453,13 @@ def rewrite_go_readme(path: Path, sdk: GoSdk) -> bool:
 # alpha/beta/rc pre-release suffix. Only the version token is rewritten, so an
 # operator prefix (``>= ``) and any trailing note (``(with the LlamaIndex
 # adapter)``) are preserved verbatim.
+# The pre-release alternation is prefix-free: ``b(?:eta)?`` / ``a(?:lpha)?``
+# fold the ``beta``/``b`` and ``alpha``/``a`` pairs together so no branch is a
+# prefix of another. The flat ``(?:rc|beta|alpha|b|a)`` form has ``b``/``a``
+# shadowing ``beta``/``alpha``, the kind of alternation overlap static analysis
+# flags as super-linear (S8786); this folds it out while matching the same set.
 _VERSION_TOKEN_RE = re.compile(
-    r"v?\d+\.\d+\.\d+(?:[-.]?(?:rc|beta|alpha|b|a)\.?\d+)?"
+    r"v?\d+\.\d+\.\d+(?:[-.]?(?:rc|b(?:eta)?|a(?:lpha)?)\.?\d+)?"
 )
 
 
