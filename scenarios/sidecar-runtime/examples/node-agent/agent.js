@@ -6,27 +6,32 @@
  * sidecar *through the SDK*, the way a real integration does:
  *
  *     your agent
- *         │  initAssembly(...) / client.callTool(...)
+ *         │  withAssembly(tools, { gatewayClient }) governs each tool.execute()
  *         ▼
  *     Agent Assembly SDK (@agent-assembly/sdk)
  *         │  aa-sdk-client (gRPC / UDS)
  *         ▼
  *     Agent Assembly core (the gateway / runtime sidecar)
  *
- * The agent never speaks the gateway's wire protocol itself. It calls the SDK's
- * `initAssembly` entrypoint, and the SDK's client transport (aa-sdk-client)
- * talks to core. This mirrors ADR 0004: examples demonstrate the SDK path,
- * never hand-rolled HTTP calls to core endpoints.
+ * The agent never speaks the gateway's wire protocol itself. The SDK's client
+ * transport (aa-sdk-client) talks to core. This mirrors ADR 0004: examples
+ * demonstrate the SDK path, never hand-rolled HTTP calls to core endpoints.
  *
- * In a real project you would write:
+ * In a real project you would write (there is no ctx.client.callTool — a deny
+ * throws PolicyViolationError before the tool body runs):
  *
- *     import { initAssembly } from '@agent-assembly/sdk';
- *     const ctx = await initAssembly({ gatewayUrl, agentId: 'my-agent' });
- *     await ctx.client.callTool('read_file', { path: '/data/report.csv' });
+ *     import { withAssembly, PolicyViolationError } from '@agent-assembly/sdk';
+ *     const tools = withAssembly(
+ *       { read_file: { execute: async ({ path }) => readReport(path) } },
+ *       { gatewayClient, agentId: 'my-agent' },
+ *     );
+ *     await tools.read_file.execute({ path: '/data/report.csv' });
  *
- * This standalone example ships a tiny local stand-in for that SDK surface so
- * it runs with no extra install (and offline, with no Docker), while keeping
- * the same init -> callTool -> audit-event shape as the real SDK.
+ * This standalone example ships a tiny local stand-in for the SDK so it runs
+ * with no extra install (and offline, with no Docker). The stand-in uses a
+ * simplified initAssembly -> client.callTool shape for readability; the
+ * published SDK governs calls through the withAssembly wrapper shown above, not
+ * a callTool method.
  *
  * Usage (with the local runtime / mock core):
  *   bash scripts/start.sh
@@ -44,12 +49,13 @@ const http = require('node:http');
 // ---------------------------------------------------------------------------
 // Minimal stand-in for the Agent Assembly SDK.
 //
-// In a real integration you would `import { initAssembly } from
-// '@agent-assembly/sdk'` instead of defining these helpers. The SDK's client
-// owns *all* transport to core (aa-sdk-client over gRPC/UDS); the agent only
-// ever calls `initAssembly` and `client.callTool`. This shim keeps that exact
-// surface so the example is faithful to the SDK path while remaining
-// install-free and runnable offline.
+// In a real integration you would `import { withAssembly } from
+// '@agent-assembly/sdk'` and wrap your tools instead of defining these helpers.
+// The SDK's client owns *all* transport to core (aa-sdk-client over gRPC/UDS).
+// This shim uses a simplified `initAssembly` -> `client.callTool` shape purely
+// so the example stays install-free and runnable offline; it is a teaching
+// stand-in, not the exact published surface (see the module header for the real
+// `withAssembly` API).
 // ---------------------------------------------------------------------------
 
 // Offline fallback policy, applied by the SDK shim when no core is reachable.

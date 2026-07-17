@@ -98,28 +98,45 @@ bash scripts/stop.sh
 
 ## How the agents use the SDK
 
-Both agents follow the same shape a real integration uses:
+Both agents demonstrate governance through the SDK. A real integration uses the
+published SDK surface (the two SDKs differ — Python governs via the runtime
+interceptor the framework examples wire up; Node wraps tools with `withAssembly`):
 
 ```python
-# Python — real integration:
+# Python — real integration. init_assembly() registers the agent and wires the
+# detected framework adapter; the runtime interceptor governs each tool call via
+# check_tool_start (see the python/ framework examples). To dispatch a governed
+# call through the client directly, dispatch_tool takes a tool name and an args
+# dict and is async — there is no client.call_tool:
+import asyncio
 from agent_assembly import init_assembly
 
-with init_assembly(gateway_url=GATEWAY_URL, agent_id="my-agent") as ctx:
-    ctx.client.call_tool("read_file", path="/data/report.csv")
+async def main():
+    with init_assembly(gateway_url=GATEWAY_URL, agent_id="my-agent") as ctx:
+        await ctx.client.dispatch_tool("read_file", {"path": "/data/report.csv"})
+
+asyncio.run(main())
 ```
 
 ```js
-// Node — real integration:
-import { initAssembly } from "@agent-assembly/sdk";
+// Node — real integration. withAssembly() wraps each tool's execute() with a
+// pre-execution governance check; a deny throws PolicyViolationError before the
+// tool body runs. There is no ctx.client.callTool:
+import { withAssembly, PolicyViolationError } from "@agent-assembly/sdk";
 
-const ctx = await initAssembly({ gatewayUrl: GATEWAY_URL, agentId: "my-agent" });
-await ctx.client.callTool("read_file", { path: "/data/report.csv" });
+const tools = withAssembly(
+  { read_file: { execute: async ({ path }) => readReport(path) } },
+  { gatewayClient, agentId: "my-agent" },
+);
+await tools.read_file.execute({ path: "/data/report.csv" });
 ```
 
 To keep this scenario install-free and runnable offline, each agent ships a tiny
-local stand-in for the SDK surface (clearly marked in the source). It exposes the
-same `init_assembly` → `client.call_tool` flow and routes governed calls through
-the SDK client to core — never via ad-hoc HTTP from the agent.
+local stand-in for the SDK (clearly marked in the source). The stand-in uses a
+simplified `init_assembly` → `client.call_tool` shape purely for readability; the
+published SDK governs calls through the interceptor / `withAssembly` wrapper shown
+above, not a `call_tool` method. Either way, governed calls route through the SDK
+client to core — never via ad-hoc HTTP from the agent.
 
 ## Expected output
 
