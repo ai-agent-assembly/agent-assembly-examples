@@ -1055,6 +1055,102 @@ def _audit_py_operator(repo_root: Path) -> list[str]:
     return problems
 
 
+def _audit_prose_label(line: str, expected_by_label: dict[str, str]) -> str | None:
+    """Return a drift message for an ``Agent Assembly <Lang> SDK`` prose line."""
+
+    label_match = _PROSE_LABEL_RE.search(line)
+    if label_match is None:
+        return None
+    token_match = _VERSION_TOKEN_RE.search(line)
+    if token_match is None:
+        return None
+    expected = expected_by_label[label_match.group(1)]
+    if token_match.group(0) == expected:
+        return None
+    return f"states {token_match.group(0)!r}, expected {expected!r}"
+
+
+def _audit_prose_backtick(
+    line: str, backtick_checks: tuple[tuple[re.Pattern[str], str], ...]
+) -> list[str]:
+    """Return drift messages for backtick-``package``-labelled prereq rows."""
+
+    problems: list[str] = []
+    for row_re, expected in backtick_checks:
+        row_match = row_re.search(line)
+        if row_match is None:
+            continue
+        token_match = _VERSION_TOKEN_RE.search(row_match.group("val"))
+        if token_match is not None and token_match.group(0) != expected:
+            problems.append(f"states {token_match.group(0)!r}, expected {expected!r}")
+    return problems
+
+
+def _audit_prose_install(
+    line: str, install_checks: tuple[tuple[re.Pattern[str], str], ...]
+) -> list[str]:
+    """Return drift messages for raw install-hint literals on a prose line."""
+
+    problems: list[str] = []
+    for hint_re, expected in install_checks:
+        hint_match = hint_re.search(line)
+        if hint_match and hint_match.group("ver") != expected:
+            problems.append(
+                f"install hint pins {hint_match.group('ver')!r}, "
+                f"expected {expected!r}"
+            )
+    return problems
+
+
+def _audit_prose_line(
+    line: str,
+    in_block: bool,
+    expected_by_label: dict[str, str],
+    backtick_checks: tuple[tuple[re.Pattern[str], str], ...],
+    install_checks: tuple[tuple[re.Pattern[str], str], ...],
+) -> list[str]:
+    """Return every drift message for one prose line, in stable emit order.
+
+    Install hints are skipped inside the generated sdk-install block — that
+    block is generator-owned and the prose install-hint pass excludes it.
+    """
+
+    problems: list[str] = []
+    label_problem = _audit_prose_label(line, expected_by_label)
+    if label_problem is not None:
+        problems.append(label_problem)
+    problems.extend(_audit_prose_backtick(line, backtick_checks))
+    if not in_block:
+        problems.extend(_audit_prose_install(line, install_checks))
+    return problems
+
+
+def _audit_prose_file(
+    path: Path,
+    rel: Path,
+    expected_by_label: dict[str, str],
+    backtick_checks: tuple[tuple[re.Pattern[str], str], ...],
+    install_checks: tuple[tuple[re.Pattern[str], str], ...],
+) -> list[str]:
+    """Report drift for one README/doc, tracking the generated-block region."""
+
+    problems: list[str] = []
+    in_block = False
+    for lineno, line in _audit_lines(path):
+        if SDK_BLOCK_BEGIN in line:
+            in_block = True
+        elif SDK_BLOCK_END in line:
+            in_block = False
+            continue
+        if EXEMPT_MARKER in line:
+            continue
+        for suffix in _audit_prose_line(
+            line, in_block, expected_by_label, backtick_checks, install_checks
+        ):
+            problems.append(f"{rel}:{lineno}: {suffix}")
+    return problems
+
+
 def _audit_prose(repo_root: Path, versions: SdkVersions) -> list[str]:
     """Report every README/doc prose line whose SDK version drifts from the SoT.
 
@@ -1089,47 +1185,11 @@ def _audit_prose(repo_root: Path, versions: SdkVersions) -> list[str]:
     problems: list[str] = []
     for path in _globbed(repo_root, _README_GLOBS + ("docs/*.md",)):
         rel = path.relative_to(repo_root)
-        in_block = False
-        for lineno, line in _audit_lines(path):
-            if SDK_BLOCK_BEGIN in line:
-                in_block = True
-            elif SDK_BLOCK_END in line:
-                in_block = False
-                continue
-            if EXEMPT_MARKER in line:
-                continue
-
-            label_match = _PROSE_LABEL_RE.search(line)
-            if label_match:
-                token_match = _VERSION_TOKEN_RE.search(line)
-                if token_match is not None:
-                    expected = expected_by_label[label_match.group(1)]
-                    if token_match.group(0) != expected:
-                        problems.append(
-                            f"{rel}:{lineno}: states {token_match.group(0)!r}, "
-                            f"expected {expected!r}"
-                        )
-
-            for row_re, expected in backtick_checks:
-                row_match = row_re.search(line)
-                if row_match is None:
-                    continue
-                token_match = _VERSION_TOKEN_RE.search(row_match.group("val"))
-                if token_match is not None and token_match.group(0) != expected:
-                    problems.append(
-                        f"{rel}:{lineno}: states {token_match.group(0)!r}, "
-                        f"expected {expected!r}"
-                    )
-
-            if in_block:
-                continue
-            for hint_re, expected in install_checks:
-                hint_match = hint_re.search(line)
-                if hint_match and hint_match.group("ver") != expected:
-                    problems.append(
-                        f"{rel}:{lineno}: install hint pins "
-                        f"{hint_match.group('ver')!r}, expected {expected!r}"
-                    )
+        problems.extend(
+            _audit_prose_file(
+                path, rel, expected_by_label, backtick_checks, install_checks
+            )
+        )
     return problems
 
 
