@@ -19,6 +19,11 @@ dependencies = [
     # keeps everything else (notably `mcp`) on stable releases.
     "azure-ai-agents>=1.2.0b3",
     "azure-ai-projects>=1.0.0b12",
+    # Direct floor to pull the patched mcp (GHSA-vj7q-gjh5-988w, fixed
+    # 1.28.1); semantic-kernel only floors mcp>=1.26.0 so the transitive
+    # otherwise resolves to a vulnerable 1.27.x. Example runs no mcp
+    # WebSocket server, but pin it patched regardless.
+    "mcp>=1.28.1",
 ]
 
 [project.optional-dependencies]
