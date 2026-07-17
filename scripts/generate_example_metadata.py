@@ -869,6 +869,25 @@ def _prereq_readmes(repo_root: Path) -> list[Path]:
     return out
 
 
+def _align_prereq_readme(
+    readme: Path,
+    labels: tuple[tuple[str, str], ...],
+    backtick_packages: tuple[tuple[str, str], ...],
+) -> bool:
+    """Align every prereq row/bullet in one README; return True if any changed."""
+
+    touched = False
+    for label, version in labels:
+        if rewrite_prereq_row(readme, label, version):
+            touched = True
+        if rewrite_prereq_bullet(readme, label, version):
+            touched = True
+    for package, version in backtick_packages:
+        if rewrite_prereq_backtick_row(readme, package, version):
+            touched = True
+    return touched
+
+
 def process_prereq_rows(repo_root: Path, versions: SdkVersions) -> list[Path]:
     """Align every hand-written ``Agent Assembly <Lang> SDK`` prereq row.
 
@@ -891,16 +910,7 @@ def process_prereq_rows(repo_root: Path, versions: SdkVersions) -> list[Path]:
     )
     changed: list[Path] = []
     for readme in _prereq_readmes(repo_root):
-        touched = False
-        for label, version in labels:
-            if rewrite_prereq_row(readme, label, version):
-                touched = True
-            if rewrite_prereq_bullet(readme, label, version):
-                touched = True
-        for package, version in backtick_packages:
-            if rewrite_prereq_backtick_row(readme, package, version):
-                touched = True
-        if touched:
+        if _align_prereq_readme(readme, labels, backtick_packages):
             changed.append(readme)
     return changed
 
