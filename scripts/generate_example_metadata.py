@@ -453,13 +453,18 @@ def rewrite_go_readme(path: Path, sdk: GoSdk) -> bool:
 # alpha/beta/rc pre-release suffix. Only the version token is rewritten, so an
 # operator prefix (``>= ``) and any trailing note (``(with the LlamaIndex
 # adapter)``) are preserved verbatim.
-# The pre-release alternation is prefix-free: ``b(?:eta)?`` / ``a(?:lpha)?``
-# fold the ``beta``/``b`` and ``alpha``/``a`` pairs together so no branch is a
-# prefix of another. The flat ``(?:rc|beta|alpha|b|a)`` form has ``b``/``a``
-# shadowing ``beta``/``alpha``, the kind of alternation overlap static analysis
-# flags as super-linear (S8786); this folds it out while matching the same set.
+# The pre-release label is matched as a generic ``[A-Za-z]+`` run rather than an
+# explicit ``rc|beta|alpha|b|a`` alternation. An enumerated alternation cannot
+# cover the real forms (``0.0.1b5``/``0.0.1a2`` appear in the corpus, so the bare
+# ``b``/``a`` short forms are load-bearing) without ``b`` shadowing ``beta`` and
+# ``a`` shadowing ``alpha`` — the overlap static analysis flags as super-linear
+# (S8786), and folding it out (``b(?:eta)?``) trips the complexity rule (S5843)
+# instead. ``[A-Za-z]+`` sits directly against ``\.?\d+``: letters and digits are
+# disjoint classes, so there is no backtracking ambiguity and no alternation to
+# overlap. It matches a superset of the enumerated forms — verified byte-identical
+# generator output and equivalent matches over the token corpus.
 _VERSION_TOKEN_RE = re.compile(
-    r"v?\d+\.\d+\.\d+(?:[-.]?(?:rc|b(?:eta)?|a(?:lpha)?)\.?\d+)?"
+    r"v?\d+\.\d+\.\d+(?:[-.]?[A-Za-z]+\.?\d+)?"
 )
 
 
