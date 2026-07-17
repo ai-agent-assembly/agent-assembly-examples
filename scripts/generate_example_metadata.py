@@ -453,18 +453,20 @@ def rewrite_go_readme(path: Path, sdk: GoSdk) -> bool:
 # alpha/beta/rc pre-release suffix. Only the version token is rewritten, so an
 # operator prefix (``>= ``) and any trailing note (``(with the LlamaIndex
 # adapter)``) are preserved verbatim.
-# The pre-release label is matched as a generic ``[A-Za-z]+`` run rather than an
-# explicit ``rc|beta|alpha|b|a`` alternation. An enumerated alternation cannot
-# cover the real forms (``0.0.1b5``/``0.0.1a2`` appear in the corpus, so the bare
-# ``b``/``a`` short forms are load-bearing) without ``b`` shadowing ``beta`` and
-# ``a`` shadowing ``alpha`` — the overlap static analysis flags as super-linear
-# (S8786), and folding it out (``b(?:eta)?``) trips the complexity rule (S5843)
-# instead. ``[A-Za-z]+`` sits directly against ``\.?\d+``: letters and digits are
-# disjoint classes, so there is no backtracking ambiguity and no alternation to
-# overlap. It matches a superset of the enumerated forms — verified byte-identical
-# generator output and equivalent matches over the token corpus.
+# The pre-release label is a generic ``[A-Za-z]+`` run, not an explicit
+# ``rc|beta|alpha|b|a`` alternation: the enumerated form can't cover the real
+# corpus (``0.0.1b5``/``0.0.1a2`` appear, so the bare ``b``/``a`` short forms are
+# load-bearing) without ``b`` shadowing ``beta`` / ``a`` shadowing ``alpha`` —
+# the overlap static analysis flags as super-linear (S8786) — and folding it out
+# (``b(?:eta)?``) trips the complexity rule (S5843). A plain letter class avoids
+# both. Every quantifier is possessive (``\d++`` / ``[A-Za-z]++``) so no token
+# can give back characters: the match is provably linear with zero backtracking,
+# which is what clears S8786. Possessive is safe here because each quantified run
+# is bounded by a disjoint following token (digits vs letters vs ``.``), so it
+# matches exactly what the greedy form did — verified byte-identical generator
+# output and equivalent matches over the token corpus.
 _VERSION_TOKEN_RE = re.compile(
-    r"v?\d+\.\d+\.\d+(?:[-.]?[A-Za-z]+\.?\d+)?"
+    r"v?\d++\.\d++\.\d++(?:[-.]?[A-Za-z]++\.?\d++)?"
 )
 
 
