@@ -1024,7 +1024,7 @@ def _audit_pins(repo_root: Path, versions: SdkVersions) -> list[str]:
 # pins are a bare ``"<version>"`` string and go pins are a bare ``go.mod``
 # version. The workflow rewriter already forces ``==`` on a bump, but this pass
 # also fails CI on a hand-authored bad operator before a regen runs.
-def _audit_py_operator(repo_root: Path, versions: SdkVersions) -> list[str]:
+def _audit_py_operator(repo_root: Path) -> list[str]:
     """Report every operator-bearing core-SDK pin that is not exact (``==``).
 
     Covers both the python manifests and the CI-workflow pip-install pins.
@@ -1128,7 +1128,7 @@ def audit(repo_root: Path, versions: SdkVersions) -> list[str]:
 
     return sorted(
         _audit_pins(repo_root, versions)
-        + _audit_py_operator(repo_root, versions)
+        + _audit_py_operator(repo_root)
         + _audit_prose(repo_root, versions)
     )
 
