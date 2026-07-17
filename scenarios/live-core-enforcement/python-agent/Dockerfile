@@ -28,7 +28,17 @@ COPY agent.py /app/agent.py
 
 # Run as a non-root user. The agent only needs to read/write the runtime socket
 # on the shared volume; it never needs root.
-RUN useradd --create-home --uid 10001 appuser \
+#
+# The uid MUST be 65532 to match the aa-runtime image (distroless `nonroot`,
+# uid 65532). The runtime creates its SDK IPC socket
+# /tmp/aa-runtime-<agent_id>.sock as mode 0600 owned by 65532 AND rejects any
+# connecting peer whose uid != 65532 (peer-uid gating — a deliberate security
+# control, not a bug). A mismatched uid can never complete the handshake, so
+# every governed call falls back to "runtime unreachable; failing closed under
+# enforce" and NO allow path is reachable. Aligning the agent's uid to the
+# runtime's is what makes the documented compose enforce out of the box; we do
+# NOT loosen the socket to 0666, which would defeat the peer-uid gate.
+RUN useradd --create-home --uid 65532 appuser \
     && chown -R appuser:appuser /app
 USER appuser
 
