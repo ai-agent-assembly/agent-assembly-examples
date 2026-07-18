@@ -6,7 +6,7 @@ Demonstrates running an AI agent against a local Agent Assembly runtime sidecar
 *through the SDK*, the way a real integration does:
 
     your agent
-        │  init_assembly(...) / client.call_tool(...)
+        │  init_assembly(...) / ctx.client.dispatch_tool(...)
         ▼
     Agent Assembly SDK
         │  aa-sdk-client (gRPC / UDS)
@@ -23,11 +23,14 @@ In a real project you would write:
     from agent_assembly import init_assembly
 
     with init_assembly(gateway_url=..., agent_id="my-agent") as ctx:
-        ctx.client.call_tool("read_file", path="/data/report.csv")
+        # dispatch_tool is async and takes the tool name + an args dict.
+        await ctx.client.dispatch_tool("read_file", {"path": "/data/report.csv"})
 
 This standalone example ships a tiny local stand-in for that SDK surface so it
 runs with no extra install (and offline, with no Docker), while keeping the same
-init -> call_tool -> audit-event shape as the real SDK.
+init -> governed-call -> audit-event shape as the real SDK. The stand-in exposes
+a synchronous ``call_tool`` for brevity; the real client method is the async
+``dispatch_tool`` shown above.
 
 Usage (with the local runtime / mock core):
     bash scripts/start.sh
@@ -49,8 +52,11 @@ from typing import Any
 #
 # In a real integration you would `from agent_assembly import init_assembly`
 # instead of defining these classes. The SDK's client owns *all* transport to
-# core (aa-sdk-client over gRPC/UDS); the agent only ever calls `init_assembly`
-# and `client.call_tool`. This shim keeps that exact surface so the example is
+# core (aa-sdk-client over gRPC/UDS); the agent initializes with `init_assembly`
+# and issues governed calls via the async `ctx.client.dispatch_tool(name, args)`
+# (or lets a framework runtime interceptor wrap its tools automatically). This
+# shim keeps that same init -> governed-call shape — with a synchronous
+# `call_tool` stand-in for the async `dispatch_tool` — so the example stays
 # faithful to the SDK path while remaining install-free and runnable offline.
 # ---------------------------------------------------------------------------
 
