@@ -102,8 +102,8 @@ The smoke suite includes a **negative control** (`test_negative_control_ungovern
 ## Switching to production mode
 
 1. Start an Agent Assembly gateway or use your SaaS workspace URL.
-2. Copy `.env.example` to `.env` and fill in your credentials (and a model provider key to drive a live smolagents agent loop).
-3. Build a real `smolagents.ToolCallingAgent` (or `CodeAgent`) with your tools and run it.
+2. Copy `.env.example` to `.env` and fill in your credentials.
+3. Build a real `smolagents.ToolCallingAgent` (or `CodeAgent`) with your tools and run it, setting a model provider key to drive the live agent loop.
 4. Run with gateway environment variables:
 
 ```bash
