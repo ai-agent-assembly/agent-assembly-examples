@@ -26,9 +26,22 @@ BUDGET_LIMIT: float = 0.50
 
 
 # ---------------------------------------------------------------------------
-# Minimal Agent Assembly SDK stubs used in this offline example.
-# In a real integration replace these with:
-#   from agent_assembly import AssemblyClient, BudgetPolicy
+# The classes below are LOCAL stand-ins so this file runs offline with no
+# install — they are NOT the SDK's public API. In a real integration you do not
+# enforce the budget in the agent at all: a budget ceiling is a GATEWAY-side
+# policy (a per-team ``budget.max_cost``, mirrored here by policy.yaml). You
+# initialize the SDK and make governed tool calls; the gateway charges each call
+# against the team budget and denies once the ceiling is reached:
+#
+#   from agent_assembly import init_assembly
+#
+#   with init_assembly(gateway_url=..., agent_id="my-agent") as ctx:
+#       # governed calls are enforced against the gateway's budget policy;
+#       # dispatch_tool is async and takes the tool name + an args dict.
+#       await ctx.client.dispatch_tool("web_search", {"query": "..."})
+#
+# There is no client-side ``AssemblyClient``/``BudgetPolicy`` to import — the
+# only budget authority is the gateway.
 # ---------------------------------------------------------------------------
 
 

@@ -23,9 +23,18 @@ const TOOL_COSTS = {
 const BUDGET_LIMIT = 0.5;
 
 // ---------------------------------------------------------------------------
-// Minimal Agent Assembly SDK stubs used in this offline example.
-// In a real integration replace these with:
-//   const { AssemblyClient, BudgetPolicy } = require('@agent-assembly/sdk');
+// The classes below are LOCAL stand-ins so this file runs offline with no
+// install — they are NOT the SDK's public API. In a real integration you do not
+// enforce the budget in the agent: a budget ceiling is a GATEWAY-side policy (a
+// per-team `budget.max_cost`, mirrored here by policy.yaml). You wrap your tools
+// with `withAssembly` and the gateway charges each governed call against the
+// team budget, rejecting with a PolicyViolationError once the ceiling is hit:
+//
+//   const { withAssembly } = require('@agent-assembly/sdk');
+//   const governed = withAssembly(tools, { gatewayClient, agentId: 'my-agent' });
+//
+// There is no `AssemblyClient`/`BudgetPolicy` export to import — the only budget
+// authority is the gateway.
 // ---------------------------------------------------------------------------
 
 class BudgetExceededError extends Error {
