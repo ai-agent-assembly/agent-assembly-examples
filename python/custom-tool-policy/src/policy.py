@@ -3,10 +3,17 @@
 This example has no framework dependency — only ``agent-assembly``.
 The policy engine simulates governance with a simple allow/deny rule set.
 
-In production:
-    with init_assembly(gateway_url="http://localhost:8080", agent_id="my-agent") as ctx:
-        # ctx.client is the gateway-backed interceptor; use it in place of
-        # LocalPolicyEngine below.
+``LocalPolicyEngine`` implements the ``check_tool_start`` contract (the public
+``GovernanceInterceptor`` protocol in ``agent_assembly.adapters``) in-process so
+the demo runs fully offline. It is a stand-in for the gateway, NOT the
+production wiring: ``ctx.client`` is a bare ``GatewayClient`` with no
+``check_tool_start`` method, so passing it to ``governed()`` makes
+``AssemblyCallbackHandler.on_tool_start`` find no check, return without raising,
+and allow every tool — governance silently disabled (fail-open). In production
+you do not wrap callables against ``ctx.client``; instead run tools through a
+supported framework adapter and let ``init_assembly()`` wire the real
+gateway-backed interceptor into it. See this example's README "Production mode"
+section.
 """
 from __future__ import annotations
 
