@@ -58,8 +58,10 @@ uv sync --extra dev
 uv run python src/main.py --mock
 ```
 
-`--mock` replays a scripted ReAct trajectory offline. The example also auto-falls
-back to mock mode whenever `OPENAI_API_KEY` is unset.
+`--mock` replays a scripted ReAct trajectory offline. This is the only run mode
+this example implements — running without `--mock` (with an `OPENAI_API_KEY`
+set) prints a notice that the live LangChain integration is not implemented here
+and exits without doing anything.
 
 ### Expected governance output
 
@@ -130,22 +132,21 @@ governance evidence a real gateway would persist server-side.
 uv run pytest tests/ -v
 ```
 
-## Switching to production mode
+## A real LangChain integration is not shipped in this example
 
-1. Start an Agent Assembly gateway (or use your SaaS workspace URL).
-2. Copy `.env.example` to `.env` and fill in your credentials.
-3. Configure the balanced policy (allowlist / budget / redaction) in the gateway.
-4. Run without `--mock` and with a real LLM provider key:
+This example is an **offline scripted governance demo** — it replays a fixed
+ReAct trajectory so the governance wiring can be exercised deterministically,
+with no API keys. It does **not** drive a real LangChain agent loop, and there
+is no runnable "live" mode: invoking it without `--mock` prints a notice to that
+effect and exits.
 
-```bash
-AGENT_ASSEMBLY_GATEWAY_URL=http://localhost:8080 \
-AGENT_ASSEMBLY_API_KEY=your-key \
-OPENAI_API_KEY=sk-your-real-key \
-uv run python src/main.py
-```
-
-In production, replace `BalancedPolicyEngine` with the gateway-backed interceptor;
-the SDK enforces the policy rules configured in the gateway automatically.
+Wiring a real agent is left as an integration exercise. Conceptually it means
+driving a real LangChain ReAct loop over the `web_search` and `calculator` tools
+with an LLM provider, and replacing `BalancedPolicyEngine` with the
+gateway-backed interceptor so the SDK enforces the policy rules configured in
+the gateway automatically. That real loop is intentionally out of scope for this
+example gallery, so nothing here promises a live command that the code does not
+run.
 
 ## Links
 
