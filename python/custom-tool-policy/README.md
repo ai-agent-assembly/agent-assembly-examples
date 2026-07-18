@@ -27,7 +27,7 @@ Demonstrates how to add [Agent Assembly](https://github.com/ai-agent-assembly/ex
 - Two **allowed** tool calls (`compute_sum`, `fetch_stock_price`).
 - Two **denied** tool calls (`send_http_request`, `write_to_disk` — blocked by policy).
 - That the wrapped function body **never executes** when governance denies it.
-- The `governed()` pattern as the building block for the `GovernedToolRunner` shown in the `llamaindex-tool-policy` example.
+- How this `governed()` pattern relates to the framework path: the `llamaindex-tool-policy` example governs tool calls by registering the native `LlamaIndexAdapter` (auto-wired by `init_assembly()`) instead of wrapping each callable.
 
 ## Prerequisites
 
