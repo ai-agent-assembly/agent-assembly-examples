@@ -14,12 +14,16 @@ checked against a *balanced* policy:
 The run finishes with a deliberate credential-leak attempt using a SAFE FAKE
 key, which the policy blocks.
 
-Run (offline mock mode — no API keys, what CI runs):
-    uv run python src/main.py --mock
+This example is an *offline scripted* governance demo: it replays a fixed ReAct
+trajectory (``_MOCK_REACT_STEPS``) so the governance wiring can be exercised
+deterministically with no API keys. It does **not** drive a real LangChain
+agent loop — no LLM provider is wired in here. Building a real ReAct loop over
+these tools is left as an integration exercise (see the README); a non-mock
+invocation is therefore refused with a clear message rather than replaying the
+script mislabelled as "live".
 
-For production use, start the Agent Assembly gateway and drop ``--mock``:
-    AGENT_ASSEMBLY_GATEWAY_URL=http://localhost:8080 \\
-    OPENAI_API_KEY=sk-... uv run python src/main.py
+Run (what CI runs):
+    uv run python src/main.py --mock
 """
 from __future__ import annotations
 
@@ -87,8 +91,17 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> None:
     args = _parse_args(argv)
-    # No real LLM provider is wired in this example, so --mock is the only path.
-    mock = args.mock or not os.environ.get("OPENAI_API_KEY")
+    # No real LLM provider is wired in this example, so the scripted trajectory
+    # is the only path. Refuse a live run plainly instead of replaying the
+    # script under a "live" label (the inert-live-mode bug this fixes).
+    if not args.mock and os.environ.get("OPENAI_API_KEY"):
+        print(
+            "Live LangChain integration is not implemented in this example — it "
+            "is an offline scripted governance demo.\n"
+            "Re-run with --mock (or without OPENAI_API_KEY) to replay the ReAct "
+            "research trajectory."
+        )
+        return
 
     print("=" * 64)
     print("  Agent Assembly — LangChain ReAct Research Agent")
@@ -97,7 +110,7 @@ def main(argv: list[str] | None = None) -> None:
 
     gateway_url = os.environ.get("AGENT_ASSEMBLY_GATEWAY_URL", "http://localhost:8080")
     api_key = os.environ.get("AGENT_ASSEMBLY_API_KEY")
-    mode_label = "mock (offline)" if mock else "live"
+    mode_label = "mock (offline)"
 
     print(f"Initializing Agent Assembly (gateway: {gateway_url}, sdk-only mode)...")
 
