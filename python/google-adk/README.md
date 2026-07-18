@@ -96,8 +96,8 @@ uv run pytest tests/ -v
 ## Switching to production mode
 
 1. Start an Agent Assembly gateway or use your SaaS workspace URL.
-2. Copy `.env.example` to `.env` and fill in your credentials (including a Gemini / Vertex AI key to drive a live model).
-3. Build a real `google.adk.agents.Agent` with your tools and run it via the ADK `Runner`.
+2. Copy `.env.example` to `.env` and fill in your credentials.
+3. Build a real `google.adk.agents.Agent` with your tools and run it via the ADK `Runner`, setting a Gemini / Vertex AI key to drive the live model.
 4. Run with gateway environment variables:
 
 ```bash
