@@ -44,8 +44,11 @@ audit event.
 | [uv](https://github.com/astral-sh/uv) | latest |
 | Agent Assembly Python SDK | >= 0.0.1rc6 |
 
-The mock demo needs no gateway, no `crewai`, and no API keys. The optional
-`live` extra (`crewai`) is only required for the real-crew integration.
+The mock demo needs no gateway, no `crewai`, and no API keys — and it is the
+only run mode this example implements (see "A real CrewAI integration is not
+shipped in this example" below). The optional `live` extra (`crewai`) is
+declared for a future real-crew integration but is not exercised by any code
+here.
 
 ## Setup
 
@@ -60,8 +63,10 @@ uv sync --extra dev
 uv run python src/main.py --mock
 ```
 
-`--mock` replays a scripted crew delegation trajectory offline. The example also
-auto-falls back to mock mode whenever `OPENAI_API_KEY` is unset.
+`--mock` replays a scripted crew delegation trajectory offline. This is the only
+run mode this example implements — running without `--mock` (with an
+`OPENAI_API_KEY` set) prints a notice that the live CrewAI integration is not
+implemented here and exits without doing anything.
 
 ### Expected governance output
 
@@ -146,24 +151,20 @@ event then records an `allow` decision.
 uv run pytest tests/ -v
 ```
 
-## Switching to the live CrewAI integration
+## A real CrewAI integration is not shipped in this example
 
-1. Install the live extra: `pip install -e '.[live]'` (pulls in `crewai`).
-2. Start an Agent Assembly gateway (or use your SaaS workspace URL).
-3. Copy `.env.example` to `.env` and fill in your credentials.
-4. Configure the approval gate and shared budget in the gateway.
-5. Run without `--mock` and with a real LLM provider key:
+This example is an **offline scripted governance demo** — it replays a fixed
+crew delegation trajectory so the governance wiring can be exercised
+deterministically, with no `crewai` install and no API keys. It does **not**
+drive a real CrewAI crew, and there is no runnable "live" mode: invoking it
+without `--mock` prints a notice to that effect and exits.
 
-```bash
-AGENT_ASSEMBLY_GATEWAY_URL=http://localhost:8080 \
-AGENT_ASSEMBLY_API_KEY=your-key \
-OPENAI_API_KEY=sk-your-real-key \
-uv run python src/main.py
-```
-
-In production, map each `CrewMember` onto a `crewai.Agent` and replace
-`CrewPolicyEngine` with the gateway-backed interceptor; the SDK enforces the
-gateway's policy and emits delegation-aware audit events automatically.
+Wiring a real crew is left as an integration exercise. Conceptually it means
+mapping each `CrewMember` onto a `crewai.Agent`, running the real crew, and
+replacing `CrewPolicyEngine` with the gateway-backed interceptor so the SDK
+enforces the gateway's policy and emits delegation-aware audit events
+automatically. That real loop is intentionally out of scope for this example
+gallery, so nothing here promises a live command that the code does not run.
 
 ## Links
 
