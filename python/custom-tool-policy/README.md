@@ -27,7 +27,7 @@ Demonstrates how to add [Agent Assembly](https://github.com/ai-agent-assembly/ex
 - Two **allowed** tool calls (`compute_sum`, `fetch_stock_price`).
 - Two **denied** tool calls (`send_http_request`, `write_to_disk` — blocked by policy).
 - That the wrapped function body **never executes** when governance denies it.
-- The `governed()` pattern as the building block for the `GovernedToolRunner` shown in the `llamaindex-tool-policy` example.
+- How this `governed()` pattern relates to the framework path: the `llamaindex-tool-policy` example governs tool calls by registering the native `LlamaIndexAdapter` (auto-wired by `init_assembly()`) instead of wrapping each callable.
 
 ## Prerequisites
 
@@ -90,21 +90,50 @@ Running governed tool calls:
 uv run pytest tests/ -v
 ```
 
-## Switching to production mode
+## Production mode — governing real tool calls
 
-Replace `LocalPolicyEngine` with `ctx.client` (the gateway-backed interceptor):
+`LocalPolicyEngine` is a stand-in for the gateway: it answers the
+`check_tool_start` contract (the `GovernanceInterceptor` protocol in
+`agent_assembly.adapters`) in-process so this demo runs fully offline. Reaching
+the real gateway in production is **not** a matter of passing `ctx.client` to
+`governed()`.
+
+> ⚠️ **Do not pass `ctx.client` as the interceptor.** `ctx.client` is a bare
+> `GatewayClient` — it has **no** `check_tool_start` method. Wire it into
+> `governed()` and `AssemblyCallbackHandler.on_tool_start` finds no check,
+> returns without raising, and **allows every tool**: governance is silently
+> disabled (fail-open). `ctx.client` is for agent metadata and audit emission,
+> not pre-execution policy checks.
+
+**The supported production path is a framework adapter.** Run your tools through
+a supported AI framework (LangChain, LlamaIndex, CrewAI, …). On startup
+`init_assembly()` auto-detects the installed adapter and wires the real
+gateway-backed interceptor into that framework's tool-execution path, so every
+tool call is checked against the gateway with no per-tool wrapper and no
+interceptor argument of your own. The `llamaindex-tool-policy` example shows
+this end to end — it registers the native `LlamaIndexAdapter` and lets
+`init_assembly()` supply the live interceptor:
 
 ```python
 from agent_assembly import init_assembly
-from agent_assembly.adapters.langchain import AssemblyCallbackHandler
 
-with init_assembly(gateway_url="http://localhost:8080", agent_id="my-agent") as ctx:
-    from src.policy import governed
-    tools = {
-        "compute_sum": governed("compute_sum", compute_sum, ctx.client),
-    }
-    result = tools["compute_sum"](a=1, b=2)
+# init_assembly() auto-detects the installed framework adapter and wires the
+# real gateway-backed interceptor into its tool-execution path. Define tools the
+# way the framework expects (e.g. a LlamaIndex FunctionTool); every call is then
+# governed against the gateway — no governed() wrapper, no ctx.client.
+with init_assembly(gateway_url="http://localhost:8080", agent_id="my-agent"):
+    ...  # run your framework agent; its tool calls are now governed
 ```
+
+> **SDK gap.** For the bare no-framework pattern this example teaches, the SDK
+> exposes no public drop-in interceptor that talks to a real gateway: the
+> gateway-backed interceptor (`RuntimeQueryInterceptor`) is internal and is only
+> wired through a registered framework adapter, and the public
+> `GovernanceInterceptor` protocol is just the `check_tool_start` contract that
+> `LocalPolicyEngine` implements here. To govern plain callables against a real
+> gateway today, adopt a supported framework adapter (above), or supply your own
+> object that implements `check_tool_start` and answers from the gateway itself
+> — never `ctx.client`.
 
 ## Troubleshooting
 
