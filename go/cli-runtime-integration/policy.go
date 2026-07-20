@@ -19,4 +19,4 @@ func (m *mockClient) WaitForApproval(_ context.Context, _ assembly.ApprovalReque
 }
 
 func (m *mockClient) RecordResult(_ context.Context, _ assembly.RecordRequest) error { return nil }
-func (m *mockClient) Close() error                                                    { return nil }
+func (m *mockClient) Close() error                                                   { return nil }
