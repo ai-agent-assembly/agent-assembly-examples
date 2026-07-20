@@ -5,11 +5,13 @@ on:
     branches: [master]
     paths:
       - "go/**"
+      - "scenarios/live-core-enforcement/go-agent/**"
       - ".github/workflows/verify-go.yml"
   pull_request:
     branches: [master]
     paths:
       - "go/**"
+      - "scenarios/live-core-enforcement/go-agent/**"
       - ".github/workflows/verify-go.yml"
 
 concurrency:
@@ -20,6 +22,39 @@ permissions:
   contents: read
 
 jobs:
+  lint:
+    name: Lint Go examples (gofmt + vet)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e  # v7.0.0
+        with:
+          go-version: "1.26"
+          cache: false
+
+      # Scope to real example modules under go/ and the scenario go-agent. The
+      # snippets/ tree is intentionally excluded: snippets/go/*.go are extracted
+      # quick-start fragments with no package clause (see scripts/extract_snippets.py),
+      # so they are not gofmt-parseable and must not be linted here.
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l go scenarios)
+          if [ -n "$unformatted" ]; then
+            echo "::error::The following Go files are not gofmt-clean. Run 'gofmt -w' on them:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: go vet
+        run: |
+          set -euo pipefail
+          for mod in $(find go scenarios -name go.mod | sort); do
+            dir=$(dirname "$mod")
+            echo "==> go vet $dir"
+            (cd "$dir" && go vet ./...)
+          done
+
   test:
     name: Test Go examples
     runs-on: ubuntu-latest
