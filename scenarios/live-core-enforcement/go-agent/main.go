@@ -13,8 +13,9 @@
 // register, and run one governed call; the workflow owns the visibility check.
 //
 // Env:
-//   AA_GATEWAY_URL  gateway endpoint the SDK registers against (gRPC :50051).
-//   AA_AGENT_ID     the id to register under (must match the workflow's assert).
+//
+//	AA_GATEWAY_URL  gateway endpoint the SDK registers against (gRPC :50051).
+//	AA_AGENT_ID     the id to register under (must match the workflow's assert).
 package main
 
 import (

@@ -77,4 +77,4 @@ func (d *denyClient) WaitForApproval(_ context.Context, _ assembly.ApprovalReque
 }
 
 func (d *denyClient) RecordResult(_ context.Context, _ assembly.RecordRequest) error { return nil }
-func (d *denyClient) Close() error                                                    { return nil }
+func (d *denyClient) Close() error                                                   { return nil }

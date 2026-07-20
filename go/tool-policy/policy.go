@@ -30,4 +30,4 @@ func (p *policyClient) WaitForApproval(_ context.Context, _ assembly.ApprovalReq
 }
 
 func (p *policyClient) RecordResult(_ context.Context, _ assembly.RecordRequest) error { return nil }
-func (p *policyClient) Close() error                                                    { return nil }
+func (p *policyClient) Close() error                                                   { return nil }
