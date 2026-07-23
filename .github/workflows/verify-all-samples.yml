@@ -101,25 +101,16 @@ jobs:
           set -euo pipefail
           # `--no-build` is skipped only for python/semantic-kernel-tool-policy:
           # its transitive dep pybars4 ships no wheel on PyPI (sdist only), so
-          # it must be built from source. `--locked` still applies everywhere.
+          # it must be built from source. `--locked` still applies. That
+          # example has a tests/ dir, so discover_samples.py always classifies
+          # it as `uv-pytest` — there is no `uv-main`/`py-script` case for it.
           if [[ "$PWD" == *"semantic-kernel-tool-policy"* ]]; then
-            case "$RUNNER" in
-              uv-pytest)
-                uv sync --extra dev --locked
-                uv run --locked pytest tests/ -v
-                ;;
-              uv-main)
-                uv sync --extra dev --locked
-                uv run --locked python "$ENTRY" --mock
-                ;;
-              py-script)
-                python "$ENTRY"
-                ;;
-              *)
-                echo "::error::unknown python runner: $RUNNER"
-                exit 1
-                ;;
-            esac
+            if [[ "$RUNNER" != "uv-pytest" ]]; then
+              echo "::error::semantic-kernel-tool-policy runner changed to $RUNNER — update this exception"
+              exit 1
+            fi
+            uv sync --extra dev --locked
+            uv run --locked pytest tests/ -v
             exit 0
           fi
           case "$RUNNER" in
